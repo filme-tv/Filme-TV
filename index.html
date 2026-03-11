@@ -2,7 +2,14 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#070709">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Royal Streams">
+<meta name="application-name" content="Royal Streams">
+<meta name="msapplication-TileColor" content="#070709">
 <title>Royal Streams</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
@@ -832,6 +839,88 @@ header {
 .feedback-area:focus { border-color: var(--gold); }
 .feedback-area::placeholder { color: var(--muted); }
 
+
+/* ══ AVATAR POPUP ═══════════════════════════ */
+.avatar-popup-overlay {
+  position: fixed; inset: 0; z-index: 150;
+  display: none;
+}
+.avatar-popup {
+  position: fixed;
+  top: 68px; right: 12px;
+  width: 240px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+  z-index: 151;
+  overflow: hidden;
+  display: none;
+  animation: popIn .2s ease;
+}
+@keyframes popIn {
+  from { opacity:0; transform: scale(0.92) translateY(-8px); }
+  to   { opacity:1; transform: scale(1) translateY(0); }
+}
+.avatar-popup-header {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+}
+.avatar-popup-avatar {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: linear-gradient(135deg,var(--gold-dim),#b8860b);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 17px; color: #000; flex-shrink: 0;
+}
+.avatar-popup-name { font-weight: 600; font-size: 14px; }
+.avatar-popup-email { font-size: 11px; color: var(--muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
+.avatar-popup-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 16px;
+  font-size: 14px; cursor: pointer;
+  transition: background .15s;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+}
+.avatar-popup-item:last-child { border-bottom: none; }
+.avatar-popup-item:hover { background: var(--surface2); }
+.avatar-popup-item svg { flex-shrink: 0; opacity: 0.7; }
+.avatar-popup-item:hover svg { opacity: 1; }
+.avatar-popup-danger { color: var(--red) !important; }
+.avatar-popup-danger svg { stroke: var(--red) !important; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.search-result-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 10px 18px;
+  cursor: pointer;
+  transition: background .15s;
+  border-bottom: 1px solid var(--border);
+}
+.search-result-item:hover { background: var(--surface); }
+.search-result-thumb {
+  width: 46px; height: 68px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: var(--surface2);
+  flex-shrink: 0;
+}
+.search-result-thumb-placeholder {
+  width: 46px; height: 68px;
+  border-radius: 6px;
+  background: var(--surface2);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.search-result-info { flex: 1; min-width: 0; }
+.search-result-title { font-size: 14px; font-weight: 600; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.search-result-meta { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+.search-result-rating { font-size: 11px; color: var(--gold); font-weight: 600; }
+.search-result-type { display:inline-block; font-size:9px; letter-spacing:1px; text-transform:uppercase; padding:2px 7px; border-radius:10px; font-weight:700; }
+.search-result-type.movie { background:rgba(255,215,0,.12); color:var(--gold); }
+.search-result-type.tv    { background:rgba(100,149,237,.12); color:#6495ed; }
+
 </style>
 </head>
 <body>
@@ -858,44 +947,110 @@ header {
     <div class="drawer-avatar" id="drawerAvatar">R</div>
     <div>
       <div class="drawer-username" id="drawerName">Usuário Royal</div>
-      <div class="drawer-plan">🌟 Plano Premium</div>
+      <div class="drawer-plan" id="drawerPlanLabel" style="font-size:12px;color:var(--gold);letter-spacing:1px;text-transform:uppercase;">Premium</div>
     </div>
   </div>
   <nav class="drawer-nav">
+    <div class="drawer-nav-section" style="padding:10px 20px 4px;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;font-weight:600;">Navegação</div>
+
     <div class="drawer-item active" onclick="goPage('home');closeDrawer()">
-      <span class="nav-icon">🏠</span> Home
+      <span class="nav-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><polyline points="9 21 9 12 15 12 15 21"/></svg>
+      </span>
+      Home
     </div>
     <div class="drawer-item" onclick="goPage('movies');closeDrawer()">
-      <span class="nav-icon">🎬</span> Filmes
+      <span class="nav-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg>
+      </span>
+      Filmes
     </div>
     <div class="drawer-item" onclick="goPage('series');closeDrawer()">
-      <span class="nav-icon">📺</span> Séries
+      <span class="nav-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg>
+      </span>
+      Séries
     </div>
     <div class="drawer-item" onclick="goPage('animes');closeDrawer()">
-      <span class="nav-icon">🍥</span> Animes
+      <span class="nav-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8.5 8.5c1-1.5 5.5-1.5 6.5 0"/><path d="M8.5 15.5c1 1.5 5.5 1.5 6.5 0"/><line x1="9" y1="12" x2="9.01" y2="12"/><line x1="15" y1="12" x2="15.01" y2="12"/></svg>
+      </span>
+      Animes
     </div>
     <div class="drawer-item" onclick="goPage('tv');closeDrawer()">
-      <span class="nav-icon">📡</span> Royal TV
+      <span class="nav-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </span>
+      Royal TV
     </div>
     <div class="drawer-item" onclick="goPage('favorites');closeDrawer()">
-      <span class="nav-icon">❤️</span> Favoritos
+      <span class="nav-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </span>
+      Favoritos
     </div>
     <div class="drawer-item" onclick="goPage('ranking');closeDrawer()">
-      <span class="nav-icon">🏆</span> Ranking
+      <span class="nav-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      </span>
+      Ranking
     </div>
     <div class="drawer-item" onclick="goPage('feedback');closeDrawer()">
-      <span class="nav-icon">💬</span> Feedback
+      <span class="nav-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </span>
+      Feedback
     </div>
-    <div class="drawer-item" onclick="showToast('📥 Instale o app via PWA em seu navegador!');closeDrawer()">
-      <span class="nav-icon">📲</span> Instalar App
+    <div class="drawer-item" onclick="showToast('Instale o app via PWA no seu navegador.');closeDrawer()">
+      <span class="nav-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </span>
+      Instalar App
     </div>
-    <div class="drawer-item" onclick="logoutApp();closeDrawer()">
-      <span class="nav-icon">🚪</span> Sair
+
+    <!-- SEÇÃO ADM — visível apenas para o administrador -->
+    <div id="admDrawerSection" style="display:none;">
+      <div class="drawer-nav-section" style="padding:16px 20px 4px;font-size:10px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;font-weight:700;border-top:1px solid var(--border);margin-top:8px;">
+        Administração
+      </div>
+      <div class="drawer-item" onclick="goPage('admPanel');closeDrawer()">
+        <span class="nav-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </span>
+        Painel ADM
+      </div>
+      <div class="drawer-item" onclick="admGerarCoins();closeDrawer()">
+        <span class="nav-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        </span>
+        Gerar Coins
+      </div>
+      <div class="drawer-item" onclick="admVerUsuarios();closeDrawer()">
+        <span class="nav-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </span>
+        Usuários
+      </div>
+      <div class="drawer-item" onclick="admSincronizar();closeDrawer()">
+        <span class="nav-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        </span>
+        Sincronizar BD
+      </div>
+    </div>
+
+    <div class="drawer-item" style="margin-top:8px;border-top:1px solid var(--border);" onclick="logoutApp();closeDrawer()">
+      <span class="nav-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </span>
+      Sair
     </div>
   </nav>
   <div class="drawer-footer">
     <div class="drawer-coins-full">
-      <div class="coin-icon">🪙</div>
+      <div class="coin-icon" style="font-size:18px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      </div>
       <div>
         <div class="dc-label">Royal Coins</div>
         <div class="dc-val" id="drawerCoins">0</div>
@@ -910,15 +1065,19 @@ header {
     <div class="hamburger" onclick="openDrawer()">
       <span></span><span></span><span></span>
     </div>
-    <div class="logo-text">ROYAL STREAMS</div>
+    
   </div>
   <div class="header-right">
     <div class="coins-badge">
-      <span class="coin-icon">🪙</span>
+      <span class="coin-icon" style="display:flex;align-items:center;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      </span>
       <span id="coinsDisplay">0</span>
     </div>
-    <div class="notif-btn">🔔</div>
-    <div class="avatar-btn" id="headerAvatar">R</div>
+    <div class="notif-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    </div>
+    <div class="avatar-btn" id="headerAvatar" onclick="toggleAvatarPopup()">R</div>
   </div>
 </header>
 
@@ -972,19 +1131,19 @@ header {
 <div id="profilesPage" style="display:none">
   <div class="profiles-title">Quem está assistindo?</div>
   <div class="profiles-grid" id="profilesGrid">
-    <div class="profile-card" onclick="selectProfile('Você','🦁','linear-gradient(135deg,#c9a800,#7a6100)')">
-      <div class="profile-avatar" style="background:linear-gradient(135deg,#c9a800,#7a6100)">🦁</div>
+    <div class="profile-card" onclick="selectProfile('Você','V','linear-gradient(135deg,#c9a800,#7a6100)')">
+      <div class="profile-avatar" style="background:linear-gradient(135deg,#c9a800,#7a6100)">V</div>
       <div class="profile-name">Você</div>
     </div>
-    <div class="profile-card" onclick="selectProfile('Família','🐯','linear-gradient(135deg,#e63946,#9b1321)')">
-      <div class="profile-avatar" style="background:linear-gradient(135deg,#e63946,#9b1321)">🐯</div>
+    <div class="profile-card" onclick="selectProfile('Família','F','linear-gradient(135deg,#e63946,#9b1321)')">
+      <div class="profile-avatar" style="background:linear-gradient(135deg,#e63946,#9b1321)">F</div>
       <div class="profile-name">Família</div>
     </div>
-    <div class="profile-card" onclick="selectProfile('Kids','🐼','linear-gradient(135deg,#4cc9f0,#1a6b8a)')">
-      <div class="profile-avatar" style="background:linear-gradient(135deg,#4cc9f0,#1a6b8a)">🐼</div>
+    <div class="profile-card" onclick="selectProfile('Kids','K','linear-gradient(135deg,#4cc9f0,#1a6b8a)')">
+      <div class="profile-avatar" style="background:linear-gradient(135deg,#4cc9f0,#1a6b8a)">K</div>
       <div class="profile-name">Kids</div>
     </div>
-    <div class="profile-add" onclick="showToast('🚧 Em breve: criar novos perfis!')">
+    <div class="profile-add" onclick="showToast('Em breve: criar novos perfis.')">
       <div class="profile-add-icon">+</div>
       <div class="profile-name">Adicionar</div>
     </div>
@@ -1003,7 +1162,7 @@ header {
         <div class="hero-badge">EM DESTAQUE</div>
         <div class="hero-title" id="heroTitle">Carregando...</div>
         <div class="hero-meta">
-          <span class="hero-rating" id="heroRating">⭐ —</span>
+          <span class="hero-rating" id="heroRating">— </span>
           <span class="hero-year" id="heroYear">—</span>
         </div>
         <div class="hero-overview" id="heroOverview"></div>
@@ -1016,7 +1175,7 @@ header {
 
     <div class="section">
       <div class="section-header">
-        <div class="section-title">🔥 Filmes Populares</div>
+        <div class="section-title">Filmes Populares</div>
         <div class="section-link" onclick="goPage('movies')">Ver todos →</div>
       </div>
       <div class="cards-row" id="rowPopular"></div>
@@ -1024,7 +1183,7 @@ header {
 
     <div class="section">
       <div class="section-header">
-        <div class="section-title">📺 Séries em Alta</div>
+        <div class="section-title">Séries em Alta</div>
         <div class="section-link" onclick="goPage('series')">Ver todos →</div>
       </div>
       <div class="cards-row" id="rowSeries"></div>
@@ -1032,7 +1191,7 @@ header {
 
     <div class="section">
       <div class="section-header">
-        <div class="section-title">🍥 Animes</div>
+        <div class="section-title">Animes</div>
         <div class="section-link" onclick="goPage('animes')">Ver todos →</div>
       </div>
       <div class="cards-row" id="rowAnimes"></div>
@@ -1040,7 +1199,7 @@ header {
 
     <div class="section">
       <div class="section-header">
-        <div class="section-title">🆕 Lançamentos</div>
+        <div class="section-title">Lançamentos</div>
         <div class="section-link">Ver todos →</div>
       </div>
       <div class="cards-row" id="rowNew"></div>
@@ -1051,7 +1210,7 @@ header {
   <div id="page-movies" class="page">
     <div class="search-bar-wrap">
       <div class="search-bar">
-        <span class="search-icon">🔍</span>
+        <span class="search-icon" style="display:flex;align-items:center;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
         <input type="text" placeholder="Buscar filmes..." id="searchMovies" oninput="filterMovies()">
       </div>
     </div>
@@ -1065,11 +1224,11 @@ header {
       <div class="chip" onclick="filterGenre(this,10749)">Romance</div>
     </div>
     <div class="section">
-      <div class="section-header"><div class="section-title">🎬 Filmes</div></div>
+      <div class="section-header"><div class="section-title">Filmes</div></div>
       <div class="cards-row" id="rowMoviesPage"></div>
     </div>
     <div class="section">
-      <div class="section-header"><div class="section-title">🏆 Mais Votados</div></div>
+      <div class="section-header"><div class="section-title">Mais Votados</div></div>
       <div class="cards-row" id="rowTopRated"></div>
     </div>
   </div>
@@ -1077,15 +1236,15 @@ header {
   <!-- SERIES PAGE -->
   <div id="page-series" class="page">
     <div class="section" style="padding-top:16px">
-      <div class="section-header"><div class="section-title">📺 Séries Populares</div></div>
+      <div class="section-header"><div class="section-title">Séries Populares</div></div>
       <div class="cards-row" id="rowSeriesPage"></div>
     </div>
     <div class="section">
-      <div class="section-header"><div class="section-title">⭐ Mais Bem Avaliadas</div></div>
+      <div class="section-header"><div class="section-title">Mais Bem Avaliadas</div></div>
       <div class="cards-row" id="rowSeriesTop"></div>
     </div>
     <div class="section">
-      <div class="section-header"><div class="section-title">🆕 Novas Séries</div></div>
+      <div class="section-header"><div class="section-title">Novas Séries</div></div>
       <div class="cards-row" id="rowSeriesNew"></div>
     </div>
   </div>
@@ -1093,11 +1252,11 @@ header {
   <!-- ANIMES PAGE -->
   <div id="page-animes" class="page">
     <div class="section" style="padding-top:16px">
-      <div class="section-header"><div class="section-title">🍥 Animes Populares</div></div>
+      <div class="section-header"><div class="section-title">Animes Populares</div></div>
       <div class="cards-row" id="rowAnimesPage"></div>
     </div>
     <div class="section">
-      <div class="section-header"><div class="section-title">🌟 Clássicos</div></div>
+      <div class="section-header"><div class="section-title">Clássicos</div></div>
       <div class="cards-row" id="rowAnimesClassic"></div>
     </div>
   </div>
@@ -1105,17 +1264,17 @@ header {
   <!-- TV PAGE -->
   <div id="page-tv" class="page">
     <div style="text-align:center;padding:60px 24px;">
-      <div style="font-size:64px;margin-bottom:16px;">📡</div>
+      <div style="margin-bottom:16px;opacity:0.4;"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:10px;">ROYAL TV</div>
       <div style="font-size:14px;color:var(--muted);max-width:300px;margin:0 auto;line-height:1.6;">TV ao vivo chegando em breve. Canais premium, esportes e muito mais.</div>
-      <button class="btn-play" style="margin-top:28px;display:inline-flex" onclick="showToast('📡 Royal TV em breve!')">Me avisar</button>
+      <button class="btn-play" style="margin-top:28px;display:inline-flex" onclick="showToast('Royal TV em breve.')">Me avisar</button>
     </div>
   </div>
 
   <!-- FAVORITES PAGE -->
   <div id="page-favorites" class="page">
     <div class="section" style="padding-top:16px">
-      <div class="section-header"><div class="section-title">❤️ Meus Favoritos</div></div>
+      <div class="section-header"><div class="section-title">Meus Favoritos</div></div>
       <div class="cards-row" id="rowFavorites">
         <div style="padding:20px;color:var(--muted);font-size:14px;">Nenhum favorito ainda.<br>Adicione conteúdos à sua lista!</div>
       </div>
@@ -1125,7 +1284,7 @@ header {
   <!-- RANKING PAGE -->
   <div id="page-ranking" class="page">
     <div style="padding:16px 18px 6px">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px">🏆 Top 10 da Semana</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px">Top 10 da Semana</div>
     </div>
     <div id="rankingList"></div>
   </div>
@@ -1133,15 +1292,15 @@ header {
   <!-- FEEDBACK PAGE -->
   <div id="page-feedback" class="page">
     <div class="feedback-wrap">
-      <div class="feedback-title">💬 Nos diga o que achou</div>
+      <div class="feedback-title">Nos diga o que achou</div>
       <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Sua opinião é muito importante para melhorarmos o Royal Streams.</div>
       <div style="font-size:13px;color:var(--muted);margin-bottom:10px;font-weight:500">Sua nota:</div>
       <div class="star-select" id="starSelect">
-        <span class="star" onclick="rateStar(1)">⭐</span>
-        <span class="star" onclick="rateStar(2)">⭐</span>
-        <span class="star" onclick="rateStar(3)">⭐</span>
-        <span class="star" onclick="rateStar(4)">⭐</span>
-        <span class="star" onclick="rateStar(5)">⭐</span>
+        <span class="star" onclick="rateStar(1)">&#9733;</span>
+        <span class="star" onclick="rateStar(2)">&#9733;</span>
+        <span class="star" onclick="rateStar(3)">&#9733;</span>
+        <span class="star" onclick="rateStar(4)">&#9733;</span>
+        <span class="star" onclick="rateStar(5)">&#9733;</span>
       </div>
       <textarea class="feedback-area" id="feedbackText" placeholder="Escreva sua sugestão ou comentário..."></textarea>
       <button class="btn-submit" onclick="sendFeedback()">Enviar Feedback</button>
@@ -1151,28 +1310,99 @@ header {
 </div><!-- /mainApp -->
 
 <!-- ════ BOTTOM NAV ════ -->
+
+<!-- ════ PAGE: SEARCH ════ -->
+<div id="page-search" class="page" style="padding-top:60px;padding-bottom:80px;min-height:100vh;">
+  <div style="padding:20px 18px 12px;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--text);margin-bottom:14px;">Buscar</div>
+    <div style="display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:30px;padding:12px 16px;transition:border-color .2s;" id="searchPageBar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="searchPageInput" type="text" placeholder="Filmes, séries, animes..."
+        oninput="searchPageQuery(this.value)"
+        style="flex:1;background:none;border:none;outline:none;color:var(--text);font-family:'Outfit',sans-serif;font-size:15px;"
+        autocomplete="off" autocorrect="off" spellcheck="false">
+      <div id="searchPageClear" onclick="searchPageClear()" style="display:none;cursor:pointer;color:var(--muted);font-size:18px;line-height:1;padding:0 2px;">✕</div>
+    </div>
+  </div>
+
+  <!-- Estado inicial -->
+  <div id="searchPageEmpty" style="padding:48px 20px;text-align:center;">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="opacity:.4;margin-bottom:16px;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <div style="font-size:15px;color:var(--muted);">Digite para buscar</div>
+    <div style="font-size:12px;color:var(--muted);opacity:.6;margin-top:4px;">Filmes, séries e animes</div>
+  </div>
+
+  <!-- Loading -->
+  <div id="searchPageLoading" style="display:none;padding:32px 20px;text-align:center;">
+    <div style="width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px;"></div>
+    <div style="font-size:13px;color:var(--muted);">Buscando...</div>
+  </div>
+
+  <!-- Sem resultados -->
+  <div id="searchPageNone" style="display:none;padding:48px 20px;text-align:center;">
+    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="opacity:.35;margin-bottom:14px;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+    <div style="font-size:15px;color:var(--muted);">Nenhum resultado</div>
+    <div id="searchPageNoneText" style="font-size:12px;color:var(--muted);opacity:.6;margin-top:4px;"></div>
+  </div>
+
+  <!-- Resultados -->
+  <div id="searchPageResults" style="display:none;">
+    <div style="padding:0 18px 10px;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;" id="searchPageCount"></div>
+    <div id="searchPageList" style="display:flex;flex-direction:column;gap:1px;"></div>
+  </div>
+</div>
+
 <nav class="bottom-nav" id="bottomNav" style="display:none">
   <div class="nav-item active" id="nav-home" onclick="goPage('home')">
-    <div class="nav-icon-wrap">🏠</div>
+    <div class="nav-icon-wrap"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><polyline points="9 21 9 12 15 12 15 21"/></svg></div>
     <div class="nav-label">Home</div>
   </div>
   <div class="nav-item" id="nav-movies" onclick="goPage('movies')">
-    <div class="nav-icon-wrap">🎬</div>
+    <div class="nav-icon-wrap"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg></div>
     <div class="nav-label">Filmes</div>
   </div>
   <div class="nav-item" id="nav-series" onclick="goPage('series')">
-    <div class="nav-icon-wrap">📺</div>
+    <div class="nav-icon-wrap"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg></div>
     <div class="nav-label">Séries</div>
   </div>
-  <div class="nav-item" id="nav-animes" onclick="goPage('animes')">
-    <div class="nav-icon-wrap">🍥</div>
-    <div class="nav-label">Animes</div>
+  <div class="nav-item" id="nav-search" onclick="goPage('search')">
+    <div class="nav-icon-wrap"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+    <div class="nav-label">Buscar</div>
   </div>
   <div class="nav-item" id="nav-favorites" onclick="goPage('favorites')">
-    <div class="nav-icon-wrap">❤️</div>
+    <div class="nav-icon-wrap"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
     <div class="nav-label">Favoritos</div>
   </div>
 </nav>
+
+
+<!-- ════ AVATAR POPUP ════ -->
+<div class="avatar-popup-overlay" id="avatarPopupOverlay" onclick="closeAvatarPopup()"></div>
+<div class="avatar-popup" id="avatarPopup">
+  <div class="avatar-popup-header">
+    <div class="avatar-popup-avatar" id="popupAvatarInitial">R</div>
+    <div style="min-width:0;">
+      <div class="avatar-popup-name" id="popupAvatarName">Usuário</div>
+      <div class="avatar-popup-email" id="popupAvatarEmail">—</div>
+    </div>
+  </div>
+  <div class="avatar-popup-item" onclick="closeAvatarPopup();goPage('favorites')">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    Meus Favoritos
+  </div>
+  <div class="avatar-popup-item" onclick="closeAvatarPopup();goPage('feedback')">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    Feedback
+  </div>
+  <div class="avatar-popup-item" id="popupAdmItem" style="display:none;" onclick="closeAvatarPopup();goPage('admPanel')">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    <span style="color:var(--gold);font-weight:600;">Painel ADM</span>
+  </div>
+  <div class="avatar-popup-item avatar-popup-danger" onclick="closeAvatarPopup();logoutApp()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    Sair
+  </div>
+</div>
 
 <!-- ════ PLAYER MODAL ════ -->
 <div class="modal-overlay" id="playerModal">
@@ -1186,8 +1416,8 @@ header {
       <div class="modal-title" id="playerTitle">—</div>
       <div class="modal-overview" id="playerOverview">—</div>
       <div class="modal-actions">
-        <div class="vip-badge" id="vipBadge">🪙 10 coins por acesso VIP</div>
-        <div id="admBadgePlayer" style="display:none;background:linear-gradient(135deg,#b8860b,#FFD700);color:#000;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;letter-spacing:1px;">👑 ADM · SEM ANÚNCIOS</div>
+        <div class="vip-badge" id="vipBadge">10 coins por acesso VIP</div>
+        <div id="admBadgePlayer" style="display:none;background:linear-gradient(135deg,#b8860b,#FFD700);color:#000;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;letter-spacing:1px;">ADM · SEM ANÚNCIOS</div>
         <button class="btn-close" onclick="closePlayer()">✕ Fechar</button>
       </div>
     </div>
@@ -1258,18 +1488,19 @@ function showCadastro() {
 function loginApp() {
   const email = document.getElementById('loginEmail').value.trim();
   const senha = document.getElementById('loginSenha').value;
-  if (!email || !senha) { showToast('⚠️ Preencha email e senha'); return; }
-  // Permite login com UID direto (campo email) para o administrador
+  if (!email || !senha) { showToast('Preencha email e senha.'); return; }
   const uid = email.trim();
   currentUser = { email, uid, name: email.split('@')[0], initials: email[0].toUpperCase() };
   if (isAdmin()) {
     coins = Infinity;
-    showToast('👑 Bem-vindo, Administrador! Acesso total liberado.');
+    showToast('Bem-vindo, Administrador. Acesso total liberado.');
   } else {
     coins = parseInt(localStorage.getItem('royalCoins') || '50');
-    showToast('✅ Bem-vindo ao Royal Streams!');
+    showToast('Bem-vindo ao Royal Streams.');
   }
   updateCoinsUI();
+  updateDrawerUser();
+  registrarUsuarioFirebase(currentUser);
   hide('loginPage');
   showProfiles();
 }
@@ -1278,14 +1509,15 @@ function cadastrarApp() {
   const nome  = document.getElementById('cadNome').value.trim();
   const email = document.getElementById('cadEmail').value.trim();
   const senha = document.getElementById('cadSenha').value;
-  if (!nome || !email || !senha) { showToast('⚠️ Preencha todos os campos'); return; }
+  if (!nome || !email || !senha) { showToast('Preencha todos os campos.'); return; }
   currentUser = { email, name: nome, initials: nome[0].toUpperCase() };
   coins = 100;
   localStorage.setItem('royalCoins', coins);
   updateCoinsUI();
+  registrarUsuarioFirebase(currentUser);
   hide('cadastroPage');
   showProfiles();
-  showToast('🎉 Conta criada! +100 Royal Coins de bônus!');
+  showToast('Conta criada com sucesso. +100 Royal Coins de bonus.');
 }
 
 function logoutApp() {
@@ -1312,27 +1544,11 @@ function selectProfile(name, emoji, bg) {
   document.getElementById('mainHeader').style.display = 'flex';
   document.getElementById('bottomNav').style.display = 'flex';
   updateCoinsUI();
+  updateDrawerUser();
   if (!loadedPages.has('home')) { loadHomePage(); loadedPages.add('home'); }
 }
 
-// ────────────────────────────────────
-// PAGE NAVIGATION
-// ────────────────────────────────────
-function goPage(p) {
-  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
-  document.getElementById('page-' + p).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-  const navEl = document.getElementById('nav-' + p);
-  if (navEl) navEl.classList.add('active');
-
-  if (!loadedPages.has(p)) {
-    if (p === 'movies')  { loadMoviesPage(); }
-    if (p === 'series')  { loadSeriesPage(); }
-    if (p === 'animes')  { loadAnimesPage(); }
-    if (p === 'ranking') { loadRanking(); }
-    loadedPages.add(p);
-  }
-}
+// PAGE NAVIGATION movida para adm_functions abaixo
 
 // ────────────────────────────────────
 // DRAWER
@@ -1350,7 +1566,7 @@ function closeDrawer() {
 // COINS
 // ────────────────────────────────────
 function updateCoinsUI() {
-  const display = isAdmin() ? '∞ 👑' : coins;
+  const display = isAdmin() ? '∞' : coins;
   document.getElementById('coinsDisplay').innerText = display;
   document.getElementById('drawerCoins').innerText  = display;
 }
@@ -1487,7 +1703,7 @@ function openPlayer() {
 function openPlayerWithItem(item, isTv = false) {
   const admin = isAdmin();
   if (!admin) {
-    if (coins < 10) { showToast('🪙 Moedas insuficientes! Precisa de 10 coins.'); return; }
+    if (coins < 10) { showToast('Saldo insuficiente. São necessários 10 coins.'); return; }
     coins -= 10;
     localStorage.setItem('royalCoins', coins);
     updateCoinsUI();
@@ -1522,12 +1738,12 @@ function openPlayerWithItem(item, isTv = false) {
     if (vipBadge)     vipBadge.style.display     = 'none';
     if (admBadge)     admBadge.style.display      = '';
     if (adBlockLayer) adBlockLayer.style.display  = 'block';
-    showToast('👑 ADM — Reprodução gratuita · Sem anúncios');
+    showToast('ADM — Reprodução gratuita. Sem anúncios.');
   } else {
     if (vipBadge)     vipBadge.style.display     = '';
     if (admBadge)     admBadge.style.display      = 'none';
     if (adBlockLayer) adBlockLayer.style.display  = 'none';
-    showToast(`🪙 -10 coins · Saldo: ${coins}`);
+    showToast(`-10 coins · Saldo: ${coins}`);
   }
 }
 
@@ -1569,8 +1785,8 @@ function rateStar(n) {
 
 function sendFeedback() {
   const text = document.getElementById('feedbackText').value.trim();
-  if (!starRating) { showToast('⚠️ Selecione uma nota!'); return; }
-  showToast('💬 Feedback enviado! Obrigado! +20 coins 🪙');
+  if (!starRating) { showToast('Selecione uma nota antes de enviar.'); return; }
+  showToast('Feedback enviado. +20 coins adicionados.');
   coins += 20;
   localStorage.setItem('royalCoins', coins);
   updateCoinsUI();
@@ -1715,6 +1931,785 @@ function hide(id) {
   await sincronizarConteudo("tv", true); // Animes
   console.log("=== Royal Streams: sync automático concluído ===");
 })();
+
+// ────────────────────────────────────
+// DRAWER USER UPDATE
+// ────────────────────────────────────
+function updateDrawerUser() {
+  if (!currentUser) return;
+  const admin = isAdmin();
+  const nameEl = document.getElementById('drawerName');
+  const avatarEl = document.getElementById('drawerAvatar');
+  const planEl = document.getElementById('drawerPlanLabel');
+  const admSection = document.getElementById('admDrawerSection');
+
+  if (nameEl) nameEl.innerText = currentUser.name || currentUser.email;
+  if (avatarEl) avatarEl.innerText = currentUser.initials || 'R';
+  if (planEl) planEl.innerText = admin ? 'Administrador' : 'Premium';
+  if (planEl) planEl.style.color = admin ? 'var(--gold)' : 'var(--gold)';
+  if (admSection) admSection.style.display = admin ? '' : 'none';
+}
+
+// ────────────────────────────────────
+// FUNÇÕES ADM
+// ────────────────────────────────────
+function admGerarCoins() {
+  if (!isAdmin()) return;
+  goPage('admPanel');
+}
+
+function admVerUsuarios() {
+  if (!isAdmin()) return;
+  showToast('Gerenciamento de usuarios disponivel no Painel ADM.');
+}
+
+function admSincronizar() {
+  if (!isAdmin()) return;
+  showToast('Sincronizacao manual iniciada em background.');
+}
+
+// Page ADM — cria a pagina se nao existir
+// ════════════════════════════════════════
+// FIREBASE ADM — instância dedicada
+// ════════════════════════════════════════
+let admDb = null;
+let admFbReady = false;
+
+async function initAdmFirebase() {
+  if (admFbReady) return admDb;
+  try {
+    const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+    const { getDatabase, ref, get, set, update, onValue, child } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
+    const cfg = {
+      apiKey: "AIzaSyAlAx_HCmlYXvsUuKxOopQsAAoHUmjp5NU",
+      authDomain: "royalcore-royalstreams.firebaseapp.com",
+      databaseURL: "https://royalcore-royalstreams-default-rtdb.firebaseio.com",
+      projectId: "royalcore-royalstreams",
+      storageBucket: "royalcore-royalstreams.firebasestorage.app",
+      messagingSenderId: "1065662141942",
+      appId: "1:1065662141942:web:0dc0d903bb618fdfc863d7"
+    };
+    const existing = getApps().find(a => a.name === 'royal-adm');
+    const app = existing || initializeApp(cfg, 'royal-adm');
+    admDb = { db: getDatabase(app), ref, get, set, update, onValue, child };
+    admFbReady = true;
+    console.log('[ADM Firebase] Pronto.');
+  } catch(e) {
+    console.error('[ADM Firebase] Erro:', e);
+  }
+  return admDb;
+}
+
+// ────────────────────────────────────
+// ENVIO DE COINS
+// ────────────────────────────────────
+let coinSendState = { valor: 0, clienteEmail: '', clienteUid: '' };
+
+async function admBuscarClientes() {
+  const fb = await initAdmFirebase();
+  if (!fb) return [];
+  try {
+    const snap = await fb.get(fb.child(fb.ref(fb.db), 'royal-streams/usuarios'));
+    if (!snap.exists()) return [];
+    const data = snap.val();
+    return Object.entries(data).map(([uid, u]) => ({ uid, ...u }));
+  } catch(e) {
+    console.warn('[ADM] Erro buscar clientes:', e);
+    return [];
+  }
+}
+
+async function admEnviarCoins(uid, email, valor) {
+  const fb = await initAdmFirebase();
+  if (!fb) { showToast('Erro: Firebase nao conectado.'); return false; }
+  try {
+    const userRef = fb.ref(fb.db, 'royal-streams/usuarios/' + uid);
+    const snap = await fb.get(userRef);
+    let saldoAtual = 0;
+    let dadosUsuario = { uid, email, nome: email };
+    if (snap.exists()) {
+      dadosUsuario = snap.val();
+      saldoAtual = dadosUsuario.coins || 0;
+    }
+    const novoSaldo = saldoAtual + valor;
+    await fb.set(userRef, {
+      ...dadosUsuario,
+      coins: novoSaldo,
+      ultimaTransacao: {
+        tipo: 'credito-adm',
+        valor,
+        de: 'administrador',
+        data: new Date().toISOString()
+      }
+    });
+    return novoSaldo;
+  } catch(e) {
+    console.error('[ADM] Erro enviar coins:', e);
+    return false;
+  }
+}
+
+async function admObterSaldoCliente(uid) {
+  const fb = await initAdmFirebase();
+  if (!fb) return null;
+  try {
+    const snap = await fb.get(fb.ref(fb.db, 'royal-streams/usuarios/' + uid));
+    if (!snap.exists()) return 0;
+    return snap.val().coins || 0;
+  } catch(e) { return null; }
+}
+
+// ────────────────────────────────────
+// UI CALCULADORA DE COINS
+// ────────────────────────────────────
+function admAtualizarDisplay(val) {
+  coinSendState.valor = val;
+  const el = document.getElementById('coinCalcDisplay');
+  if (el) el.textContent = val.toLocaleString('pt-BR');
+  const btnEnviar = document.getElementById('btnEnviarCoins');
+  const uid = coinSendState.clienteUid;
+  if (btnEnviar) btnEnviar.disabled = !(val > 0 && uid);
+}
+
+function admDigito(d) {
+  let atual = coinSendState.valor;
+  if (d === 'C') { admAtualizarDisplay(0); return; }
+  if (d === '⌫') { admAtualizarDisplay(Math.floor(atual / 10)); return; }
+  if (atual >= 999999) return;
+  admAtualizarDisplay(atual * 10 + d);
+}
+
+function admPreset(v) { admAtualizarDisplay(v); }
+
+async function admSelecionarCliente(uid, email, nome) {
+  coinSendState.clienteUid   = uid;
+  coinSendState.clienteEmail = email;
+  // Atualizar UI
+  const sel = document.getElementById('clienteSelecionado');
+  if (sel) {
+    sel.innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--gold-dim),#b8860b);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#000;">${(nome||email)[0].toUpperCase()}</div>
+        <div>
+          <div style="font-weight:600;font-size:14px;">${nome||email}</div>
+          <div style="font-size:11px;color:var(--muted);">${email}</div>
+        </div>
+        <div id="saldoClienteTag" style="margin-left:auto;font-size:12px;color:var(--gold);background:var(--surface2);padding:4px 10px;border-radius:12px;">carregando...</div>
+      </div>`;
+    sel.style.display = '';
+  }
+  // Fechar lista
+  const lista = document.getElementById('listaClientesDropdown');
+  if (lista) lista.style.display = 'none';
+  // Buscar saldo
+  const saldo = await admObterSaldoCliente(uid);
+  const saldoEl = document.getElementById('saldoClienteTag');
+  if (saldoEl) saldoEl.textContent = saldo !== null ? `Saldo: ${saldo}` : 'Saldo: —';
+  // Habilitar botão se valor > 0
+  admAtualizarDisplay(coinSendState.valor);
+}
+
+async function admBuscarFiltrar(q) {
+  const lista = document.getElementById('listaClientesDropdown');
+  const statusEl = document.getElementById('buscaStatus');
+  if (!lista) return;
+  if (!q || q.length < 2) { lista.style.display = 'none'; return; }
+  lista.style.display = '';
+  lista.innerHTML = '<div style="padding:14px;color:var(--muted);font-size:13px;">Buscando...</div>';
+  if (statusEl) statusEl.textContent = 'Buscando...';
+  const fb = await initAdmFirebase();
+  if (!fb) { lista.innerHTML = '<div style="padding:14px;color:var(--red);font-size:13px;">Firebase indisponivel.</div>'; return; }
+  try {
+    const snap = await fb.get(fb.child(fb.ref(fb.db), 'royal-streams/usuarios'));
+    if (!snap.exists()) {
+      lista.innerHTML = '<div style="padding:14px;color:var(--muted);font-size:13px;">Nenhum usuario cadastrado no banco.</div>';
+      if (statusEl) statusEl.textContent = '';
+      return;
+    }
+    const todos = Object.entries(snap.val()).map(([uid, u]) => ({ uid, ...u }));
+    const filtrados = todos.filter(u =>
+      (u.email||'').toLowerCase().includes(q.toLowerCase()) ||
+      (u.nome||'').toLowerCase().includes(q.toLowerCase())
+    );
+    if (statusEl) statusEl.textContent = `${filtrados.length} encontrado(s)`;
+    if (!filtrados.length) {
+      lista.innerHTML = '<div style="padding:14px;color:var(--muted);font-size:13px;">Nenhum resultado.</div>';
+      return;
+    }
+    lista.innerHTML = filtrados.slice(0, 8).map(u => `
+      <div onclick="admSelecionarCliente('${u.uid}','${u.email||u.uid}','${u.nome||''}')"
+        style="display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;"
+        onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='transparent'">
+        <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--gold-dim),#b8860b);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#000;flex-shrink:0;">${((u.nome||u.email||'?')[0]).toUpperCase()}</div>
+        <div style="min-width:0;">
+          <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${u.nome||'—'}</div>
+          <div style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${u.email||u.uid}</div>
+        </div>
+        <div style="margin-left:auto;font-size:11px;color:var(--gold);flex-shrink:0;">${u.coins||0} coins</div>
+      </div>`).join('');
+  } catch(e) {
+    lista.innerHTML = '<div style="padding:14px;color:var(--red);font-size:13px;">Erro ao buscar usuarios.</div>';
+  }
+}
+
+async function admConfirmarEnvio() {
+  const { clienteUid, clienteEmail, valor } = coinSendState;
+  if (!clienteUid || valor <= 0) { showToast('Selecione um cliente e informe o valor.'); return; }
+  const btn = document.getElementById('btnEnviarCoins');
+  if (btn) { btn.disabled = true; btn.textContent = 'Enviando...'; }
+  const novoSaldo = await admEnviarCoins(clienteUid, clienteEmail, valor);
+  if (btn) { btn.disabled = false; btn.textContent = 'Enviar Coins'; }
+  if (novoSaldo !== false) {
+    showToast(`${valor} coins enviados. Novo saldo: ${novoSaldo}.`);
+    // Atualizar saldo exibido
+    const saldoEl = document.getElementById('saldoClienteTag');
+    if (saldoEl) saldoEl.textContent = `Saldo: ${novoSaldo}`;
+    // Resetar calculadora
+    admAtualizarDisplay(0);
+  } else {
+    showToast('Erro ao enviar coins. Verifique o Firebase.');
+  }
+}
+
+// ────────────────────────────────────
+// VERIFICAR / REGISTRAR USUARIO NO FIREBASE
+// (chama no login de usuário normal)
+// ────────────────────────────────────
+async function registrarUsuarioFirebase(user) {
+  if (!user || isAdmin()) return;
+  const fb = await initAdmFirebase();
+  if (!fb) return;
+  try {
+    const userRef = fb.ref(fb.db, 'royal-streams/usuarios/' + (user.uid || user.email.replace(/[.#$[\]]/g,'_')));
+    const snap = await fb.get(userRef);
+    if (!snap.exists()) {
+      await fb.set(userRef, {
+        uid:   user.uid || user.email,
+        email: user.email,
+        nome:  user.name || user.email.split('@')[0],
+        coins: coins,
+        cadastro: new Date().toISOString()
+      });
+    } else {
+      // sincronizar saldo local com Firebase
+      const dadosFb = snap.val();
+      if (dadosFb.coins !== undefined) {
+        coins = dadosFb.coins;
+        localStorage.setItem('royalCoins', coins);
+        updateCoinsUI();
+      }
+      // atualizar saldo no firebase tambem
+      await fb.update(userRef, { coins, ultimoAcesso: new Date().toISOString() });
+    }
+  } catch(e) { console.warn('[ADM] Erro registrar usuario:', e); }
+}
+
+// ════════════════════════════════════════
+// PAINEL ADM — goPage
+// ════════════════════════════════════════
+function goPage(p) {
+  if (p === 'admPanel' && !document.getElementById('page-admPanel')) {
+    const admPage = document.createElement('div');
+    admPage.id = 'page-admPanel';
+    admPage.className = 'page';
+    admPage.innerHTML = `
+      <div style="padding:80px 20px 100px;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;color:var(--gold);margin-bottom:2px;">PAINEL ADM</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:28px;letter-spacing:1px;text-transform:uppercase;">Royal Streams — Controle total</div>
+
+        <!-- STATUS -->
+        <div style="display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;margin-bottom:28px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:#4caf50;flex-shrink:0;box-shadow:0 0 6px #4caf50;"></div>
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--gold);">Administrador ativo</div>
+            <div style="font-size:11px;color:var(--muted);">Reproducao gratuita · Sem anuncios · Acesso total</div>
+          </div>
+        </div>
+
+        <!-- ENVIAR COINS -->
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:20px;">
+          <div style="padding:18px 20px 14px;border-bottom:1px solid var(--border);">
+            <div style="font-size:10px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;font-weight:700;margin-bottom:2px;">Transferencia de Coins</div>
+            <div style="font-size:13px;color:var(--muted);">Envie coins para qualquer cliente registrado</div>
+          </div>
+
+          <div style="padding:20px;">
+            <!-- Busca de cliente -->
+            <div style="font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">Cliente</div>
+            <div style="position:relative;">
+              <input id="buscaClienteInput" type="text" placeholder="Buscar por nome ou email..."
+                oninput="admBuscarFiltrar(this.value)"
+                style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:11px 14px;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:border-color .2s;"
+                onfocus="this.style.borderColor='var(--gold)'" onblur="setTimeout(()=>{const l=document.getElementById('listaClientesDropdown');if(l)l.style.display='none'},200);this.style.borderColor='var(--border)'">
+              <div style="font-size:11px;color:var(--muted);margin-top:4px;" id="buscaStatus"></div>
+              <!-- Dropdown resultados -->
+              <div id="listaClientesDropdown"
+                style="display:none;position:absolute;left:0;right:0;top:calc(100% + 4px);background:var(--surface);border:1px solid var(--border);border-radius:8px;z-index:50;max-height:260px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.5);">
+              </div>
+            </div>
+
+            <!-- Cliente selecionado -->
+            <div id="clienteSelecionado" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-top:12px;"></div>
+
+            <!-- Calculadora -->
+            <div style="margin-top:20px;">
+              <div style="font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">Valor a enviar</div>
+
+              <!-- Display -->
+              <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center;margin-bottom:14px;">
+                <div style="font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:4px;">COINS</div>
+                <div id="coinCalcDisplay" style="font-family:'Bebas Neue',sans-serif;font-size:52px;color:var(--gold);letter-spacing:3px;line-height:1;">0</div>
+              </div>
+
+              <!-- Presets -->
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;">
+                ${[50,100,200,500,1000,2000,5000,10000].map(v => `
+                <div onclick="admPreset(${v})"
+                  style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 4px;text-align:center;cursor:pointer;font-size:12px;font-weight:600;transition:all .15s;"
+                  onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">
+                  ${v >= 1000 ? (v/1000)+'k' : v}
+                </div>`).join('')}
+              </div>
+
+              <!-- Teclado numérico -->
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;">
+                ${[1,2,3,4,5,6,7,8,9,'C',0,'⌫'].map(d => `
+                <div onclick="admDigito(${typeof d === 'number' ? d : "'" + d + "'"})"
+                  style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:16px;text-align:center;cursor:pointer;font-size:${typeof d === 'string' && d !== '⌫' ? '14px' : '18px'};font-weight:600;transition:all .15s;${d==='C'?'color:var(--red);':''}"
+                  onmouseover="this.style.background='var(--surface)'" onmouseout="this.style.background='var(--surface2)'">
+                  ${d}
+                </div>`).join('')}
+              </div>
+
+              <!-- Botão enviar -->
+              <button id="btnEnviarCoins" onclick="admConfirmarEnvio()" disabled
+                style="width:100%;padding:15px;background:var(--gold);color:#000;font-family:'Outfit',sans-serif;font-weight:700;font-size:15px;border:none;border-radius:10px;cursor:pointer;transition:all .2s;letter-spacing:0.5px;opacity:0.4;"
+                onmouseover="if(!this.disabled){this.style.background='#ffe347'}" onmouseout="this.style.background='var(--gold)'">
+                Enviar Coins
+              </button>
+              <style>
+                #btnEnviarCoins:not([disabled]) { opacity: 1 !important; }
+                #btnEnviarCoins[disabled] { cursor: not-allowed; }
+              </style>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACOES RAPIDAS -->
+        <div style="font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;font-weight:600;margin-bottom:12px;">Acoes Rapidas</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div onclick="admVerUsuarios()" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;cursor:pointer;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="font-size:10px;color:var(--gold);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Usuarios</div>
+            <div style="font-size:14px;font-weight:600;">Gerenciar</div>
+          </div>
+          <div onclick="admSincronizar()" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;cursor:pointer;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="font-size:10px;color:var(--gold);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Banco de Dados</div>
+            <div style="font-size:14px;font-weight:600;">Sincronizar</div>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('mainApp').appendChild(admPage);
+  }
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  const target = document.getElementById('page-' + p);
+  if (target) target.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const navEl = document.getElementById('nav-' + p);
+  if (navEl) navEl.classList.add('active');
+
+  if (!loadedPages.has(p)) {
+    if (p === 'movies')  { loadMoviesPage(); }
+    if (p === 'series')  { loadSeriesPage(); }
+    if (p === 'animes')  { loadAnimesPage(); }
+    if (p === 'ranking') { loadRanking(); }
+    loadedPages.add(p);
+  }
+  // Focar input ao abrir busca
+  if (p === 'search') {
+    setTimeout(() => {
+      const inp = document.getElementById('searchPageInput');
+      if (inp) inp.focus();
+    }, 100);
+  }
+  // Fechar popup avatar se aberto
+  closeAvatarPopup();
+}
+
 </script>
+
+<!-- ════ PWA INSTALL BANNER ════ -->
+<div id="pwaBanner" style="
+  display:none;position:fixed;bottom:0;left:0;right:0;z-index:9000;
+  background:linear-gradient(180deg,rgba(7,7,9,0) 0%,rgba(7,7,9,0.98) 100%);
+  padding:0 16px 32px;
+  animation:slideUpBanner .4s ease;
+">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:0 -8px 40px rgba(0,0,0,0.6);">
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+      <div style="width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,#c9a800,#FFD700);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 16px rgba(255,215,0,0.3);">
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#000;letter-spacing:1px;">RS</span>
+      </div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--gold);">ROYAL STREAMS</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:1px;">Adicionar à tela inicial</div>
+      </div>
+      <div onclick="pwaDismiss()" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:18px;border-radius:50%;transition:background .2s;" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='transparent'">✕</div>
+    </div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.5;">
+      Instale o app na sua tela inicial para acesso rapido, experiencia em tela cheia e uso offline.
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="pwaDismiss()" style="flex:1;padding:12px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--muted);font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;" onmouseover="this.style.borderColor='var(--muted)'" onmouseout="this.style.borderColor='var(--border)'">
+        Agora nao
+      </button>
+      <button onclick="pwaInstall()" id="btnPwaInstall" style="flex:2;padding:12px;background:var(--gold);border:none;border-radius:10px;color:#000;font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:0.3px;" onmouseover="this.style.background='#ffe347'" onmouseout="this.style.background='var(--gold)'">
+        Instalar App
+      </button>
+    </div>
+    <!-- iOS instructions (shown only on iOS) -->
+    <div id="pwaIosInstructions" style="display:none;margin-top:14px;padding:12px;background:var(--surface2);border-radius:8px;font-size:12px;color:var(--muted);line-height:1.6;">
+      No Safari: toque em <strong style="color:var(--text);">Compartilhar</strong> → <strong style="color:var(--text);">Adicionar à Tela de Inicio</strong>
+    </div>
+  </div>
+</div>
+<style>
+@keyframes slideUpBanner {
+  from { transform:translateY(100%); opacity:0; }
+  to { transform:translateY(0); opacity:1; }
+}
+</style>
+
+<script>
+// ════════════════════════════════════════════════════════
+// ROYAL STREAMS — PWA
+// ════════════════════════════════════════════════════════
+
+// ── Manifest inline via Blob ─────────────────────────
+(function injectManifest() {
+  const manifest = {
+    name: "Royal Streams",
+    short_name: "Royal",
+    description: "Streaming premium de filmes, series e animes.",
+    start_url: "./",
+    display: "standalone",
+    orientation: "portrait",
+    background_color: "#070709",
+    theme_color: "#070709",
+    lang: "pt-BR",
+    icons: [
+      { src: "data:image/svg+xml," + encodeURIComponent(`
+        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'>
+          <rect width='512' height='512' rx='80' fill='%23070709'/>
+          <text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle'
+            font-family='serif' font-size='260' font-weight='700' fill='%23FFD700'
+            letter-spacing='-10'>RS</text>
+        </svg>`),
+        sizes: "512x512", type: "image/svg+xml", purpose: "any maskable"
+      },
+      { src: "data:image/svg+xml," + encodeURIComponent(`
+        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'>
+          <rect width='192' height='192' rx='30' fill='%23070709'/>
+          <text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle'
+            font-family='serif' font-size='100' font-weight='700' fill='%23FFD700'>RS</text>
+        </svg>`),
+        sizes: "192x192", type: "image/svg+xml", purpose: "any maskable"
+      }
+    ],
+    screenshots: [],
+    categories: ["entertainment"],
+    shortcuts: [
+      { name: "Filmes", short_name: "Filmes", url: "./#movies", description: "Ver filmes" },
+      { name: "Series", short_name: "Series", url: "./#series", description: "Ver series" }
+    ]
+  };
+  const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+  const url  = URL.createObjectURL(blob);
+  const link = document.createElement('link');
+  link.rel   = 'manifest';
+  link.href  = url;
+  document.head.appendChild(link);
+
+  // Apple touch icon inline
+  const appleIcon = document.createElement('link');
+  appleIcon.rel   = 'apple-touch-icon';
+  appleIcon.href  = "data:image/svg+xml," + encodeURIComponent(`
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'>
+      <rect width='180' height='180' rx='28' fill='%23070709'/>
+      <text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle'
+        font-family='serif' font-size='95' font-weight='700' fill='%23FFD700'>RS</text>
+    </svg>`);
+  document.head.appendChild(appleIcon);
+})();
+
+// ── Service Worker via Blob ──────────────────────────
+(function registerSW() {
+  if (!('serviceWorker' in navigator)) return;
+
+  const swCode = `
+    const CACHE = 'royal-streams-v1';
+    const ASSETS = ['/'];
+
+    self.addEventListener('install', e => {
+      e.waitUntil(
+        caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting())
+      );
+    });
+
+    self.addEventListener('activate', e => {
+      e.waitUntil(
+        caches.keys().then(keys =>
+          Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+        ).then(() => self.clients.claim())
+      );
+    });
+
+    self.addEventListener('fetch', e => {
+      if (e.request.method !== 'GET') return;
+      const url = new URL(e.request.url);
+      // Nao cachear APIs externas
+      if (url.hostname.includes('themoviedb') || url.hostname.includes('firebase') || url.hostname.includes('gstatic')) return;
+      e.respondWith(
+        caches.match(e.request).then(cached => {
+          const network = fetch(e.request).then(res => {
+            if (res.ok) {
+              const clone = res.clone();
+              caches.open(CACHE).then(cache => cache.put(e.request, clone));
+            }
+            return res;
+          });
+          return cached || network;
+        })
+      );
+    });
+
+    // Notificacao de atualizacao
+    self.addEventListener('message', e => {
+      if (e.data === 'skipWaiting') self.skipWaiting();
+    });
+  `;
+
+  const blob = new Blob([swCode], { type: 'application/javascript' });
+  const swUrl = URL.createObjectURL(blob);
+
+  navigator.serviceWorker.register(swUrl, { scope: './' })
+    .then(reg => {
+      console.log('[PWA] Service Worker registrado:', reg.scope);
+      reg.addEventListener('updatefound', () => {
+        const newSW = reg.installing;
+        newSW.addEventListener('statechange', () => {
+          if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+            console.log('[PWA] Atualização disponivel.');
+          }
+        });
+      });
+    })
+    .catch(err => console.warn('[PWA] SW falhou:', err));
+})();
+
+// ── Logica de instalação ─────────────────────────────
+let pwaPrompt = null;
+let pwaInstalled = false;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  pwaPrompt = e;
+  console.log('[PWA] Prompt de instalação capturado.');
+  // Mostra o banner após 3s ou após o splash
+  setTimeout(pwaMostrarBanner, 3500);
+});
+
+window.addEventListener('appinstalled', () => {
+  pwaInstalled = true;
+  pwaDismiss();
+  console.log('[PWA] App instalado com sucesso!');
+  setTimeout(() => showToast('App instalado na tela inicial.'), 500);
+});
+
+function pwaMostrarBanner() {
+  // Nao mostrar se ja instalado ou se ja está rodando como PWA
+  if (pwaInstalled) return;
+  if (window.matchMedia('(display-mode: standalone)').matches) return;
+  if (window.navigator.standalone === true) return; // iOS standalone
+  // Nao mostrar se usuario ja dispensou recentemente
+  const dispensou = localStorage.getItem('pwaDismissed');
+  if (dispensou && Date.now() - parseInt(dispensou) < 3 * 24 * 60 * 60 * 1000) return; // 3 dias
+
+  const banner = document.getElementById('pwaBanner');
+  if (!banner) return;
+
+  // iOS detection
+  const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+  if (isIos) {
+    document.getElementById('pwaIosInstructions').style.display = '';
+    document.getElementById('btnPwaInstall').style.display = 'none';
+  }
+
+  banner.style.display = '';
+}
+
+function pwaInstall() {
+  if (!pwaPrompt) return;
+  pwaPrompt.prompt();
+  pwaPrompt.userChoice.then(result => {
+    console.log('[PWA] Escolha do usuario:', result.outcome);
+    if (result.outcome === 'accepted') {
+      pwaDismiss();
+    }
+    pwaPrompt = null;
+  });
+}
+
+function pwaDismiss() {
+  const banner = document.getElementById('pwaBanner');
+  if (banner) {
+    banner.style.animation = 'none';
+    banner.style.transition = 'opacity .3s, transform .3s';
+    banner.style.opacity = '0';
+    banner.style.transform = 'translateY(20px)';
+    setTimeout(() => { banner.style.display = 'none'; banner.style.opacity = ''; banner.style.transform = ''; }, 300);
+  }
+  localStorage.setItem('pwaDismissed', Date.now().toString());
+}
+
+// Atualizar item do drawer
+document.addEventListener('DOMContentLoaded', () => {
+  const drawerInstalar = document.querySelector('[onclick*="Instale o app"]');
+  if (drawerInstalar) {
+    drawerInstalar.onclick = () => { pwaMostrarBanner(); closeDrawer(); };
+  }
+});
+
+// ────────────────────────────────────
+// AVATAR POPUP
+// ────────────────────────────────────
+function toggleAvatarPopup() {
+  const popup = document.getElementById('avatarPopup');
+  const overlay = document.getElementById('avatarPopupOverlay');
+  const isOpen = popup.style.display === 'block';
+  if (isOpen) {
+    closeAvatarPopup();
+  } else {
+    // Preencher dados
+    if (currentUser) {
+      document.getElementById('popupAvatarInitial').textContent = currentUser.initials || 'R';
+      document.getElementById('popupAvatarName').textContent    = currentUser.name || currentUser.email;
+      document.getElementById('popupAvatarEmail').textContent   = currentUser.email || '';
+      const admItem = document.getElementById('popupAdmItem');
+      if (admItem) admItem.style.display = isAdmin() ? '' : 'none';
+    }
+    popup.style.display   = 'block';
+    overlay.style.display = 'block';
+  }
+}
+
+function closeAvatarPopup() {
+  const popup   = document.getElementById('avatarPopup');
+  const overlay = document.getElementById('avatarPopupOverlay');
+  if (popup)   popup.style.display   = 'none';
+  if (overlay) overlay.style.display = 'none';
+}
+
+// ────────────────────────────────────
+// BUSCA — Search Page
+// ────────────────────────────────────
+let searchDebounce = null;
+let searchPageBar  = null;
+
+function searchPageClear() {
+  const input = document.getElementById('searchPageInput');
+  if (input) { input.value = ''; input.focus(); }
+  searchPageQuery('');
+}
+
+async function searchPageQuery(q) {
+  const clear = document.getElementById('searchPageClear');
+  const empty = document.getElementById('searchPageEmpty');
+  const loading = document.getElementById('searchPageLoading');
+  const none = document.getElementById('searchPageNone');
+  const results = document.getElementById('searchPageResults');
+
+  if (clear) clear.style.display = q ? '' : 'none';
+
+  if (!q || q.trim().length < 2) {
+    if (empty)   empty.style.display   = '';
+    if (loading) loading.style.display = 'none';
+    if (none)    none.style.display    = 'none';
+    if (results) results.style.display = 'none';
+    return;
+  }
+
+  if (empty)   empty.style.display   = 'none';
+  if (none)    none.style.display    = 'none';
+  if (results) results.style.display = 'none';
+  if (loading) loading.style.display = '';
+
+  clearTimeout(searchDebounce);
+  searchDebounce = setTimeout(async () => {
+    try {
+      const [moviesRes, tvRes] = await Promise.all([
+        fetch(`${API}/search/movie?api_key=${TMDB}&language=pt-BR&query=${encodeURIComponent(q)}&page=1`),
+        fetch(`${API}/search/tv?api_key=${TMDB}&language=pt-BR&query=${encodeURIComponent(q)}&page=1`)
+      ]);
+      const movies = await moviesRes.json();
+      const tv     = await tvRes.json();
+
+      const moviesItems = (movies.results || []).map(i => ({ ...i, _type: 'movie' }));
+      const tvItems     = (tv.results    || []).map(i => ({ ...i, _type: 'tv' }));
+      const combined    = [...moviesItems, ...tvItems]
+        .sort((a, b) => b.popularity - a.popularity)
+        .slice(0, 40);
+
+      if (loading) loading.style.display = 'none';
+
+      if (!combined.length) {
+        if (none) {
+          document.getElementById('searchPageNoneText').textContent = 'para "' + q + '"';
+          none.style.display = '';
+        }
+        return;
+      }
+
+      const list  = document.getElementById('searchPageList');
+      const count = document.getElementById('searchPageCount');
+      if (count) count.textContent = combined.length + ' resultado' + (combined.length !== 1 ? 's' : '');
+      if (list) {
+        list.innerHTML = combined.map(item => {
+          const title   = item.title || item.name || '—';
+          const year    = (item.release_date || item.first_air_date || '').slice(0, 4);
+          const rating  = item.vote_average ? item.vote_average.toFixed(1) : '—';
+          const poster  = item.poster_path ? IMG + item.poster_path : null;
+          const typeLabel = item._type === 'movie' ? 'Filme' : 'Série';
+          const typeClass = item._type === 'movie' ? 'movie' : 'tv';
+          const thumb = poster
+            ? `<img class="search-result-thumb" src="${poster}" alt="${title}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="search-result-thumb-placeholder" style="display:none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="2"/><line x1="7" y1="2" x2="7" y2="22"/></svg></div>`
+            : `<div class="search-result-thumb-placeholder"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="2"/><line x1="7" y1="2" x2="7" y2="22"/></svg></div>`;
+          return `<div class="search-result-item" onclick='openPlayerWithItem(${JSON.stringify({id:item.id,title:item.title,name:item.name,overview:item.overview,poster_path:item.poster_path})},${item._type === 'tv'})'>
+            ${thumb}
+            <div class="search-result-info">
+              <div class="search-result-title">${title}</div>
+              <div class="search-result-meta">${year ? year + ' · ' : ''}<span class="search-result-type ${typeClass}">${typeLabel}</span></div>
+              ${rating !== '—' ? '<div class="search-result-rating">&#9733; ' + rating + '</div>' : ''}
+            </div>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>`;
+        }).join('');
+      }
+      if (results) results.style.display = '';
+    } catch(e) {
+      if (loading) loading.style.display = 'none';
+      if (none) {
+        document.getElementById('searchPageNoneText').textContent = 'Erro ao buscar. Tente novamente.';
+        none.style.display = '';
+      }
+    }
+  }, 350);
+}
+
+// Focar input ao entrar na busca
+const _goPageOrig = goPage;
+
+</script>
+
 </body>
 </html>
