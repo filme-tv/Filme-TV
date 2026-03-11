@@ -1,0 +1,1720 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Royal Streams</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --gold: #FFD700;
+  --gold-dim: #c9a800;
+  --gold-glow: rgba(255,215,0,0.18);
+  --bg: #070709;
+  --surface: #10101a;
+  --surface2: #181826;
+  --border: rgba(255,215,0,0.10);
+  --text: #e8e8f0;
+  --muted: #7a7a9a;
+  --red: #e63946;
+  --radius: 10px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 4px; }
+
+/* ══════════════════════════════════════
+   SPLASH
+══════════════════════════════════════ */
+#splash {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+#splash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+.splash-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(48px, 10vw, 96px);
+  letter-spacing: 6px;
+  color: var(--gold);
+  text-shadow: 0 0 60px rgba(255,215,0,0.5), 0 0 120px rgba(255,215,0,0.2);
+  animation: pulseGold 1.8s ease-in-out infinite;
+}
+.splash-sub {
+  font-size: 13px;
+  letter-spacing: 5px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-top: 8px;
+}
+.splash-bar {
+  width: 200px; height: 2px;
+  background: var(--surface2);
+  border-radius: 2px;
+  margin-top: 40px;
+  overflow: hidden;
+}
+.splash-progress {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+  border-radius: 2px;
+  animation: loadBar 2.5s ease forwards;
+}
+
+@keyframes pulseGold {
+  0%,100% { text-shadow: 0 0 40px rgba(255,215,0,0.4); }
+  50% { text-shadow: 0 0 80px rgba(255,215,0,0.7), 0 0 160px rgba(255,215,0,0.2); }
+}
+@keyframes loadBar {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+/* ══════════════════════════════════════
+   PAGES
+══════════════════════════════════════ */
+.page { display: none; animation: fadeIn .35s ease; }
+.page.active { display: block; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ══════════════════════════════════════
+   HEADER
+══════════════════════════════════════ */
+header {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 18px;
+  background: linear-gradient(180deg, rgba(7,7,9,0.98) 0%, rgba(7,7,9,0.7) 100%);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+}
+
+.header-left { display: flex; align-items: center; gap: 14px; }
+
+.hamburger {
+  width: 32px; height: 32px;
+  display: flex; flex-direction: column; justify-content: center; gap: 5px;
+  cursor: pointer; padding: 4px;
+}
+.hamburger span {
+  display: block; height: 2px; border-radius: 2px;
+  background: var(--text);
+  transition: all .3s;
+}
+.hamburger:hover span { background: var(--gold); }
+
+.logo-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 3px;
+  color: var(--gold);
+  text-shadow: 0 0 20px rgba(255,215,0,0.3);
+}
+
+.header-right { display: flex; align-items: center; gap: 12px; }
+
+.coins-badge {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--gold);
+}
+.coin-icon { font-size: 16px; }
+
+.notif-btn {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  font-size: 16px;
+  transition: all .2s;
+}
+.notif-btn:hover { background: var(--surface2); border-color: var(--gold); }
+
+.avatar-btn {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold-dim), #b8860b);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 14px;
+  color: #000;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color .2s;
+}
+.avatar-btn:hover { border-color: var(--gold); }
+
+/* ══════════════════════════════════════
+   DRAWER
+══════════════════════════════════════ */
+.drawer-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 199;
+  opacity: 0; visibility: hidden;
+  transition: all .3s;
+  backdrop-filter: blur(4px);
+}
+.drawer-overlay.open { opacity: 1; visibility: visible; }
+
+.drawer {
+  position: fixed;
+  top: 0; left: -280px;
+  width: 280px; height: 100%;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  z-index: 200;
+  transition: left .35s cubic-bezier(0.4,0,0.2,1);
+  display: flex; flex-direction: column;
+}
+.drawer.open { left: 0; }
+
+.drawer-header {
+  padding: 24px 20px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+}
+.drawer-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 26px; letter-spacing: 3px;
+  color: var(--gold);
+}
+.drawer-close {
+  margin-left: auto;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 20px;
+  color: var(--muted); border-radius: 50%;
+  transition: all .2s;
+}
+.drawer-close:hover { color: var(--gold); background: var(--surface2); }
+
+.drawer-user {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+}
+.drawer-avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold-dim), #b8860b);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 18px; color: #000;
+}
+.drawer-username { font-weight: 600; font-size: 15px; }
+.drawer-plan { font-size: 12px; color: var(--gold); }
+
+.drawer-nav { flex: 1; padding: 10px 0; overflow-y: auto; }
+
+.drawer-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 20px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all .2s;
+  border-left: 3px solid transparent;
+}
+.drawer-item:hover, .drawer-item.active {
+  background: var(--surface2);
+  color: var(--gold);
+  border-left-color: var(--gold);
+}
+.drawer-item .nav-icon { font-size: 18px; width: 24px; text-align: center; }
+
+.drawer-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+}
+.drawer-coins-full {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+}
+.drawer-coins-full .coin-icon { font-size: 22px; }
+.dc-label { font-size: 11px; color: var(--muted); }
+.dc-val { font-size: 20px; font-weight: 700; color: var(--gold); }
+
+/* ══════════════════════════════════════
+   MAIN CONTENT AREA
+══════════════════════════════════════ */
+#mainApp { padding-top: 60px; padding-bottom: 70px; }
+
+/* ══════════════════════════════════════
+   HERO BANNER
+══════════════════════════════════════ */
+.hero-banner {
+  position: relative;
+  height: clamp(280px, 55vw, 480px);
+  overflow: hidden;
+  background: var(--surface);
+}
+.hero-backdrop {
+  position: absolute; inset: 0;
+  background-size: cover;
+  background-position: center top;
+  transition: background-image .6s ease;
+}
+.hero-gradient {
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(7,7,9,0.15) 0%,
+    rgba(7,7,9,0.1) 40%,
+    rgba(7,7,9,0.85) 80%,
+    rgba(7,7,9,1) 100%
+  );
+}
+.hero-content {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 24px 20px;
+}
+.hero-badge {
+  display: inline-block;
+  background: var(--gold);
+  color: #000;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+.hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(28px, 7vw, 52px);
+  letter-spacing: 2px;
+  line-height: 1;
+  margin-bottom: 8px;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.8);
+}
+.hero-overview {
+  font-size: 13px;
+  color: rgba(232,232,240,0.8);
+  line-height: 1.5;
+  max-width: 480px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.hero-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+.hero-year, .hero-rating {
+  font-size: 12px; color: var(--muted);
+}
+.hero-rating { color: var(--gold); font-weight: 600; }
+.hero-actions { display: flex; gap: 10px; }
+
+.btn-play {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--gold);
+  color: #000;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn-play:hover { background: #ffe347; transform: scale(1.03); }
+
+.btn-info {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.12);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 18px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all .2s;
+  backdrop-filter: blur(4px);
+}
+.btn-info:hover { background: rgba(255,255,255,0.2); }
+
+/* ══════════════════════════════════════
+   CONTENT ROWS
+══════════════════════════════════════ */
+.section { padding: 0 0 8px; }
+
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 18px 10px;
+}
+.section-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 1.5px;
+  color: var(--text);
+}
+.section-link {
+  font-size: 12px;
+  color: var(--gold);
+  text-decoration: none;
+  letter-spacing: 1px;
+  opacity: 0.8;
+  transition: opacity .2s;
+  cursor: pointer;
+}
+.section-link:hover { opacity: 1; }
+
+.cards-row {
+  display: flex;
+  overflow-x: auto;
+  gap: 10px;
+  padding: 0 18px 10px;
+  scroll-behavior: smooth;
+}
+.cards-row::-webkit-scrollbar { display: none; }
+
+/* ══════════════════════════════════════
+   CARDS
+══════════════════════════════════════ */
+.card {
+  flex: 0 0 auto;
+  width: 140px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--surface2);
+  cursor: pointer;
+  transition: transform .25s, box-shadow .25s;
+  position: relative;
+}
+.card:hover {
+  transform: scale(1.05) translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.6), 0 0 0 1px var(--border);
+  z-index: 10;
+}
+.card img {
+  width: 100%; aspect-ratio: 2/3;
+  object-fit: cover;
+  display: block;
+  transition: filter .25s;
+}
+.card:hover img { filter: brightness(0.7); }
+
+.card-overlay {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .25s;
+}
+.card:hover .card-overlay { opacity: 1; }
+.card-play-icon {
+  width: 42px; height: 42px;
+  background: rgba(255,215,0,0.9);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; color: #000;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+.card-info {
+  padding: 8px 8px 10px;
+}
+.card-title {
+  font-size: 12px; font-weight: 500;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  color: var(--text);
+}
+.card-meta { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+/* Skeleton loading */
+.card-skeleton {
+  flex: 0 0 auto; width: 140px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--surface2);
+}
+.skeleton-img {
+  width: 100%; aspect-ratio: 2/3;
+  background: linear-gradient(90deg, var(--surface2) 0%, var(--surface) 50%, var(--surface2) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+.skeleton-line {
+  height: 10px; border-radius: 4px; margin: 8px 8px 4px;
+  background: linear-gradient(90deg, var(--surface2) 0%, var(--surface) 50%, var(--surface2) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+.skeleton-line.short { width: 60%; height: 8px; }
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ══════════════════════════════════════
+   BOTTOM NAVBAR
+══════════════════════════════════════ */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: 62px;
+  background: rgba(10,10,16,0.97);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+  display: flex;
+  z-index: 100;
+}
+
+.nav-item {
+  flex: 1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 3px;
+  cursor: pointer;
+  padding: 8px 4px;
+  transition: all .2s;
+  color: var(--muted);
+  position: relative;
+}
+.nav-item.active { color: var(--gold); }
+.nav-item:hover { color: var(--text); }
+.nav-item.active::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 32px; height: 2px;
+  background: var(--gold);
+  border-radius: 0 0 4px 4px;
+}
+
+.nav-icon-wrap { font-size: 20px; line-height: 1; }
+.nav-label { font-size: 10px; font-weight: 500; letter-spacing: 0.5px; }
+
+/* ══════════════════════════════════════
+   MODAL / PLAYER
+══════════════════════════════════════ */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.92);
+  z-index: 500;
+  display: none;
+  align-items: center; justify-content: center;
+  backdrop-filter: blur(8px);
+}
+.modal-overlay.open { display: flex; }
+
+.modal-box {
+  width: 92%; max-width: 760px;
+  background: var(--surface);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  animation: zoomIn .3s ease;
+}
+@keyframes zoomIn {
+  from { transform: scale(0.88); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.modal-player {
+  width: 100%; aspect-ratio: 16/9;
+  background: #000;
+}
+.modal-player iframe { width: 100%; height: 100%; border: none; }
+
+.modal-info { padding: 20px; }
+.modal-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 26px; letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.modal-overview { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 16px; }
+.modal-actions { display: flex; gap: 10px; align-items: center; }
+.btn-close {
+  background: var(--surface2);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 9px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn-close:hover { background: var(--red); border-color: var(--red); }
+
+.vip-badge {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 9px 14px;
+  font-size: 13px;
+  color: var(--gold);
+}
+
+/* ══════════════════════════════════════
+   TOAST
+══════════════════════════════════════ */
+#toast {
+  position: fixed; bottom: 80px; left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 12px 22px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  z-index: 1000;
+  opacity: 0; visibility: hidden;
+  transition: all .3s;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+#toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(-4px); }
+
+/* ══════════════════════════════════════
+   LOGIN PAGE
+══════════════════════════════════════ */
+#loginPage {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 24px;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255,215,0,0.08) 0%, transparent 70%);
+}
+
+.login-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 52px; letter-spacing: 6px;
+  color: var(--gold);
+  text-shadow: 0 0 40px rgba(255,215,0,0.3);
+  margin-bottom: 6px;
+}
+.login-tagline { font-size: 13px; color: var(--muted); letter-spacing: 3px; margin-bottom: 40px; }
+
+.login-card {
+  width: 100%; max-width: 360px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px 28px;
+}
+
+.login-title { font-size: 20px; font-weight: 700; margin-bottom: 24px; }
+
+.form-group { margin-bottom: 16px; }
+.form-label { font-size: 12px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; display: block; }
+.form-input {
+  width: 100%; padding: 12px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  transition: border-color .2s;
+  outline: none;
+}
+.form-input:focus { border-color: var(--gold); }
+.form-input::placeholder { color: var(--muted); }
+
+.btn-submit {
+  width: 100%;
+  background: var(--gold);
+  color: #000;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 13px;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  margin-top: 8px;
+  transition: all .2s;
+  letter-spacing: 1px;
+}
+.btn-submit:hover { background: #ffe347; transform: scale(1.01); }
+
+.login-switch { margin-top: 20px; text-align: center; font-size: 13px; color: var(--muted); }
+.login-switch span { color: var(--gold); cursor: pointer; font-weight: 600; }
+.login-switch span:hover { text-decoration: underline; }
+
+/* ══════════════════════════════════════
+   PROFILE SELECTION
+══════════════════════════════════════ */
+#profilesPage {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 24px;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255,215,0,0.06) 0%, transparent 70%);
+}
+
+.profiles-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 30px; letter-spacing: 3px;
+  color: var(--text);
+  margin-bottom: 32px;
+}
+
+.profiles-grid {
+  display: flex; flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  max-width: 500px;
+  margin-bottom: 28px;
+}
+
+.profile-card {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 10px;
+  cursor: pointer;
+  transition: transform .2s;
+}
+.profile-card:hover { transform: scale(1.06); }
+
+.profile-avatar {
+  width: 90px; height: 90px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px;
+  border: 3px solid transparent;
+  transition: border-color .2s;
+}
+.profile-card:hover .profile-avatar { border-color: var(--gold); }
+.profile-name { font-size: 13px; font-weight: 500; }
+
+.profile-add {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 10px;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity .2s;
+}
+.profile-add:hover { opacity: 0.8; }
+.profile-add-icon {
+  width: 90px; height: 90px;
+  border-radius: 14px;
+  border: 2px dashed var(--muted);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; color: var(--muted);
+}
+
+/* ══════════════════════════════════════
+   SEARCH BAR
+══════════════════════════════════════ */
+.search-bar-wrap {
+  padding: 12px 18px;
+}
+.search-bar {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  padding: 10px 16px;
+  transition: border-color .2s;
+}
+.search-bar:focus-within { border-color: var(--gold); }
+.search-bar input {
+  flex: 1; background: none; border: none; outline: none;
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+}
+.search-bar input::placeholder { color: var(--muted); }
+.search-icon { color: var(--muted); font-size: 16px; }
+
+/* Genre chips */
+.genre-chips {
+  display: flex; gap: 8px;
+  padding: 0 18px 14px;
+  overflow-x: auto;
+}
+.genre-chips::-webkit-scrollbar { display: none; }
+.chip {
+  flex: 0 0 auto;
+  padding: 6px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 12px; font-weight: 500;
+  cursor: pointer;
+  transition: all .2s;
+  white-space: nowrap;
+}
+.chip:hover, .chip.active {
+  background: var(--gold);
+  color: #000;
+  border-color: var(--gold);
+}
+
+/* Ranking section */
+.ranking-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background .2s;
+}
+.ranking-item:hover { background: var(--surface); }
+.rank-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px; color: var(--gold);
+  width: 28px; text-align: center;
+  opacity: 0.6;
+}
+.rank-num.top3 { opacity: 1; color: var(--gold); }
+.rank-img {
+  width: 54px; height: 78px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: var(--surface2);
+}
+.rank-info { flex: 1; }
+.rank-title { font-weight: 600; font-size: 14px; margin-bottom: 3px; }
+.rank-meta { font-size: 12px; color: var(--muted); }
+.rank-arrow { color: var(--muted); font-size: 18px; }
+
+/* ══════════════════════════════════════
+   FEEDBACK PAGE
+══════════════════════════════════════ */
+.feedback-wrap { padding: 20px 18px; }
+.feedback-title { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 2px; margin-bottom: 20px; }
+.star-select { display: flex; gap: 10px; margin-bottom: 20px; }
+.star { font-size: 32px; cursor: pointer; filter: grayscale(1); transition: filter .2s, transform .2s; }
+.star:hover, .star.active { filter: none; transform: scale(1.2); }
+.feedback-area {
+  width: 100%; min-height: 120px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  padding: 14px;
+  outline: none; resize: vertical;
+  transition: border-color .2s;
+  margin-bottom: 16px;
+}
+.feedback-area:focus { border-color: var(--gold); }
+.feedback-area::placeholder { color: var(--muted); }
+
+</style>
+</head>
+<body>
+
+<!-- ════ SPLASH ════ -->
+<div id="splash">
+  <div class="splash-logo">ROYAL STREAMS</div>
+  <div class="splash-sub">Entretenimento Premium</div>
+  <div class="splash-bar">
+    <div class="splash-progress"></div>
+  </div>
+</div>
+
+<!-- ════ DRAWER OVERLAY ════ -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+
+<!-- ════ DRAWER ════ -->
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <div class="drawer-logo">ROYAL STREAMS</div>
+    <div class="drawer-close" onclick="closeDrawer()">✕</div>
+  </div>
+  <div class="drawer-user">
+    <div class="drawer-avatar" id="drawerAvatar">R</div>
+    <div>
+      <div class="drawer-username" id="drawerName">Usuário Royal</div>
+      <div class="drawer-plan">🌟 Plano Premium</div>
+    </div>
+  </div>
+  <nav class="drawer-nav">
+    <div class="drawer-item active" onclick="goPage('home');closeDrawer()">
+      <span class="nav-icon">🏠</span> Home
+    </div>
+    <div class="drawer-item" onclick="goPage('movies');closeDrawer()">
+      <span class="nav-icon">🎬</span> Filmes
+    </div>
+    <div class="drawer-item" onclick="goPage('series');closeDrawer()">
+      <span class="nav-icon">📺</span> Séries
+    </div>
+    <div class="drawer-item" onclick="goPage('animes');closeDrawer()">
+      <span class="nav-icon">🍥</span> Animes
+    </div>
+    <div class="drawer-item" onclick="goPage('tv');closeDrawer()">
+      <span class="nav-icon">📡</span> Royal TV
+    </div>
+    <div class="drawer-item" onclick="goPage('favorites');closeDrawer()">
+      <span class="nav-icon">❤️</span> Favoritos
+    </div>
+    <div class="drawer-item" onclick="goPage('ranking');closeDrawer()">
+      <span class="nav-icon">🏆</span> Ranking
+    </div>
+    <div class="drawer-item" onclick="goPage('feedback');closeDrawer()">
+      <span class="nav-icon">💬</span> Feedback
+    </div>
+    <div class="drawer-item" onclick="showToast('📥 Instale o app via PWA em seu navegador!');closeDrawer()">
+      <span class="nav-icon">📲</span> Instalar App
+    </div>
+    <div class="drawer-item" onclick="logoutApp();closeDrawer()">
+      <span class="nav-icon">🚪</span> Sair
+    </div>
+  </nav>
+  <div class="drawer-footer">
+    <div class="drawer-coins-full">
+      <div class="coin-icon">🪙</div>
+      <div>
+        <div class="dc-label">Royal Coins</div>
+        <div class="dc-val" id="drawerCoins">0</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ HEADER ════ -->
+<header id="mainHeader" style="display:none">
+  <div class="header-left">
+    <div class="hamburger" onclick="openDrawer()">
+      <span></span><span></span><span></span>
+    </div>
+    <div class="logo-text">ROYAL STREAMS</div>
+  </div>
+  <div class="header-right">
+    <div class="coins-badge">
+      <span class="coin-icon">🪙</span>
+      <span id="coinsDisplay">0</span>
+    </div>
+    <div class="notif-btn">🔔</div>
+    <div class="avatar-btn" id="headerAvatar">R</div>
+  </div>
+</header>
+
+<!-- ════ LOGIN PAGE ════ -->
+<div id="loginPage">
+  <div class="login-logo">ROYAL</div>
+  <div class="login-tagline">STREAMS · PREMIUM</div>
+  <div class="login-card">
+    <div class="login-title">Entrar na conta</div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-input" type="email" id="loginEmail" placeholder="seu@email.com">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Senha</label>
+      <input class="form-input" type="password" id="loginSenha" placeholder="••••••••">
+    </div>
+    <button class="btn-submit" onclick="loginApp()">Entrar</button>
+    <div class="login-switch">Não tem conta? <span onclick="showCadastro()">Criar agora</span></div>
+  </div>
+</div>
+
+<!-- ════ CADASTRO PAGE ════ -->
+<div id="cadastroPage" style="display:none">
+  <div class="login-logo">ROYAL</div>
+  <div class="login-tagline">STREAMS · PREMIUM</div>
+  <div class="login-card">
+    <div class="login-title">Criar conta</div>
+    <div class="form-group">
+      <label class="form-label">Nome</label>
+      <input class="form-input" type="text" id="cadNome" placeholder="Seu nome">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-input" type="email" id="cadEmail" placeholder="seu@email.com">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Senha</label>
+      <input class="form-input" type="password" id="cadSenha" placeholder="••••••••">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Código de convite</label>
+      <input class="form-input" type="text" id="cadConvite" placeholder="Opcional">
+    </div>
+    <button class="btn-submit" onclick="cadastrarApp()">Criar Conta</button>
+    <div class="login-switch">Já tem conta? <span onclick="showLogin()">Entrar</span></div>
+  </div>
+</div>
+
+<!-- ════ PROFILES PAGE ════ -->
+<div id="profilesPage" style="display:none">
+  <div class="profiles-title">Quem está assistindo?</div>
+  <div class="profiles-grid" id="profilesGrid">
+    <div class="profile-card" onclick="selectProfile('Você','🦁','linear-gradient(135deg,#c9a800,#7a6100)')">
+      <div class="profile-avatar" style="background:linear-gradient(135deg,#c9a800,#7a6100)">🦁</div>
+      <div class="profile-name">Você</div>
+    </div>
+    <div class="profile-card" onclick="selectProfile('Família','🐯','linear-gradient(135deg,#e63946,#9b1321)')">
+      <div class="profile-avatar" style="background:linear-gradient(135deg,#e63946,#9b1321)">🐯</div>
+      <div class="profile-name">Família</div>
+    </div>
+    <div class="profile-card" onclick="selectProfile('Kids','🐼','linear-gradient(135deg,#4cc9f0,#1a6b8a)')">
+      <div class="profile-avatar" style="background:linear-gradient(135deg,#4cc9f0,#1a6b8a)">🐼</div>
+      <div class="profile-name">Kids</div>
+    </div>
+    <div class="profile-add" onclick="showToast('🚧 Em breve: criar novos perfis!')">
+      <div class="profile-add-icon">+</div>
+      <div class="profile-name">Adicionar</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ MAIN APP ════ -->
+<div id="mainApp" style="display:none">
+
+  <!-- HOME PAGE -->
+  <div id="page-home" class="page active">
+    <div class="hero-banner">
+      <div class="hero-backdrop" id="heroBg"></div>
+      <div class="hero-gradient"></div>
+      <div class="hero-content">
+        <div class="hero-badge">EM DESTAQUE</div>
+        <div class="hero-title" id="heroTitle">Carregando...</div>
+        <div class="hero-meta">
+          <span class="hero-rating" id="heroRating">⭐ —</span>
+          <span class="hero-year" id="heroYear">—</span>
+        </div>
+        <div class="hero-overview" id="heroOverview"></div>
+        <div class="hero-actions">
+          <button class="btn-play" onclick="openPlayer()">▶ Reproduzir</button>
+          <button class="btn-info" onclick="showToast('ℹ️ Detalhes em breve!')">ⓘ Detalhes</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">🔥 Filmes Populares</div>
+        <div class="section-link" onclick="goPage('movies')">Ver todos →</div>
+      </div>
+      <div class="cards-row" id="rowPopular"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">📺 Séries em Alta</div>
+        <div class="section-link" onclick="goPage('series')">Ver todos →</div>
+      </div>
+      <div class="cards-row" id="rowSeries"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">🍥 Animes</div>
+        <div class="section-link" onclick="goPage('animes')">Ver todos →</div>
+      </div>
+      <div class="cards-row" id="rowAnimes"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">🆕 Lançamentos</div>
+        <div class="section-link">Ver todos →</div>
+      </div>
+      <div class="cards-row" id="rowNew"></div>
+    </div>
+  </div>
+
+  <!-- MOVIES PAGE -->
+  <div id="page-movies" class="page">
+    <div class="search-bar-wrap">
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Buscar filmes..." id="searchMovies" oninput="filterMovies()">
+      </div>
+    </div>
+    <div class="genre-chips" id="genreChips">
+      <div class="chip active" onclick="filterGenre(this,0)">Todos</div>
+      <div class="chip" onclick="filterGenre(this,28)">Ação</div>
+      <div class="chip" onclick="filterGenre(this,35)">Comédia</div>
+      <div class="chip" onclick="filterGenre(this,18)">Drama</div>
+      <div class="chip" onclick="filterGenre(this,27)">Terror</div>
+      <div class="chip" onclick="filterGenre(this,878)">Ficção</div>
+      <div class="chip" onclick="filterGenre(this,10749)">Romance</div>
+    </div>
+    <div class="section">
+      <div class="section-header"><div class="section-title">🎬 Filmes</div></div>
+      <div class="cards-row" id="rowMoviesPage"></div>
+    </div>
+    <div class="section">
+      <div class="section-header"><div class="section-title">🏆 Mais Votados</div></div>
+      <div class="cards-row" id="rowTopRated"></div>
+    </div>
+  </div>
+
+  <!-- SERIES PAGE -->
+  <div id="page-series" class="page">
+    <div class="section" style="padding-top:16px">
+      <div class="section-header"><div class="section-title">📺 Séries Populares</div></div>
+      <div class="cards-row" id="rowSeriesPage"></div>
+    </div>
+    <div class="section">
+      <div class="section-header"><div class="section-title">⭐ Mais Bem Avaliadas</div></div>
+      <div class="cards-row" id="rowSeriesTop"></div>
+    </div>
+    <div class="section">
+      <div class="section-header"><div class="section-title">🆕 Novas Séries</div></div>
+      <div class="cards-row" id="rowSeriesNew"></div>
+    </div>
+  </div>
+
+  <!-- ANIMES PAGE -->
+  <div id="page-animes" class="page">
+    <div class="section" style="padding-top:16px">
+      <div class="section-header"><div class="section-title">🍥 Animes Populares</div></div>
+      <div class="cards-row" id="rowAnimesPage"></div>
+    </div>
+    <div class="section">
+      <div class="section-header"><div class="section-title">🌟 Clássicos</div></div>
+      <div class="cards-row" id="rowAnimesClassic"></div>
+    </div>
+  </div>
+
+  <!-- TV PAGE -->
+  <div id="page-tv" class="page">
+    <div style="text-align:center;padding:60px 24px;">
+      <div style="font-size:64px;margin-bottom:16px;">📡</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:10px;">ROYAL TV</div>
+      <div style="font-size:14px;color:var(--muted);max-width:300px;margin:0 auto;line-height:1.6;">TV ao vivo chegando em breve. Canais premium, esportes e muito mais.</div>
+      <button class="btn-play" style="margin-top:28px;display:inline-flex" onclick="showToast('📡 Royal TV em breve!')">Me avisar</button>
+    </div>
+  </div>
+
+  <!-- FAVORITES PAGE -->
+  <div id="page-favorites" class="page">
+    <div class="section" style="padding-top:16px">
+      <div class="section-header"><div class="section-title">❤️ Meus Favoritos</div></div>
+      <div class="cards-row" id="rowFavorites">
+        <div style="padding:20px;color:var(--muted);font-size:14px;">Nenhum favorito ainda.<br>Adicione conteúdos à sua lista!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RANKING PAGE -->
+  <div id="page-ranking" class="page">
+    <div style="padding:16px 18px 6px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px">🏆 Top 10 da Semana</div>
+    </div>
+    <div id="rankingList"></div>
+  </div>
+
+  <!-- FEEDBACK PAGE -->
+  <div id="page-feedback" class="page">
+    <div class="feedback-wrap">
+      <div class="feedback-title">💬 Nos diga o que achou</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Sua opinião é muito importante para melhorarmos o Royal Streams.</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:10px;font-weight:500">Sua nota:</div>
+      <div class="star-select" id="starSelect">
+        <span class="star" onclick="rateStar(1)">⭐</span>
+        <span class="star" onclick="rateStar(2)">⭐</span>
+        <span class="star" onclick="rateStar(3)">⭐</span>
+        <span class="star" onclick="rateStar(4)">⭐</span>
+        <span class="star" onclick="rateStar(5)">⭐</span>
+      </div>
+      <textarea class="feedback-area" id="feedbackText" placeholder="Escreva sua sugestão ou comentário..."></textarea>
+      <button class="btn-submit" onclick="sendFeedback()">Enviar Feedback</button>
+    </div>
+  </div>
+
+</div><!-- /mainApp -->
+
+<!-- ════ BOTTOM NAV ════ -->
+<nav class="bottom-nav" id="bottomNav" style="display:none">
+  <div class="nav-item active" id="nav-home" onclick="goPage('home')">
+    <div class="nav-icon-wrap">🏠</div>
+    <div class="nav-label">Home</div>
+  </div>
+  <div class="nav-item" id="nav-movies" onclick="goPage('movies')">
+    <div class="nav-icon-wrap">🎬</div>
+    <div class="nav-label">Filmes</div>
+  </div>
+  <div class="nav-item" id="nav-series" onclick="goPage('series')">
+    <div class="nav-icon-wrap">📺</div>
+    <div class="nav-label">Séries</div>
+  </div>
+  <div class="nav-item" id="nav-animes" onclick="goPage('animes')">
+    <div class="nav-icon-wrap">🍥</div>
+    <div class="nav-label">Animes</div>
+  </div>
+  <div class="nav-item" id="nav-favorites" onclick="goPage('favorites')">
+    <div class="nav-icon-wrap">❤️</div>
+    <div class="nav-label">Favoritos</div>
+  </div>
+</nav>
+
+<!-- ════ PLAYER MODAL ════ -->
+<div class="modal-overlay" id="playerModal">
+  <div class="modal-box">
+    <div class="modal-player" style="position:relative;">
+      <iframe id="playerFrame" src="" allowfullscreen referrerpolicy="no-referrer"></iframe>
+      <!-- Camada bloqueadora de anúncios para ADM -->
+      <div id="adBlockLayer" style="display:none;position:absolute;inset:0;pointer-events:none;z-index:10;"></div>
+    </div>
+    <div class="modal-info">
+      <div class="modal-title" id="playerTitle">—</div>
+      <div class="modal-overview" id="playerOverview">—</div>
+      <div class="modal-actions">
+        <div class="vip-badge" id="vipBadge">🪙 10 coins por acesso VIP</div>
+        <div id="admBadgePlayer" style="display:none;background:linear-gradient(135deg,#b8860b,#FFD700);color:#000;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;letter-spacing:1px;">👑 ADM · SEM ANÚNCIOS</div>
+        <button class="btn-close" onclick="closePlayer()">✕ Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ TOAST ════ -->
+<div id="toast"></div>
+
+<script>
+// ────────────────────────────────────
+// CONFIG
+// ────────────────────────────────────
+const TMDB = "93f6cc12e6897cce8be566c0e2f43a3b";
+const API  = `https://api.themoviedb.org/3`;
+const IMG  = `https://image.tmdb.org/t/p/w500`;
+const OIMG = `https://image.tmdb.org/t/p/original`;
+
+// ── ADMIN ──────────────────────────────
+const ADMIN_UID = "UQ3KdS2e18ayfvpqcKzrhUkgyUo2";
+function isAdmin() { return currentUser && currentUser.uid === ADMIN_UID; }
+
+// Bloqueia popups/janelas abertas pelo player quando ADM estiver logado
+const _windowOpen = window.open.bind(window);
+window.open = function(...args) {
+  if (isAdmin()) { console.log('[ADM AdBlock] Popup bloqueado:', args[0]); return null; }
+  return _windowOpen(...args);
+};
+// ───────────────────────────────────────
+
+let currentUser = null;
+let coins = 50;
+let currentHero = null;
+let loadedPages = new Set();
+let starRating = 0;
+
+// ────────────────────────────────────
+// SPLASH
+// ────────────────────────────────────
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('splash').classList.add('hidden');
+    showLogin();
+  }, 2800);
+});
+
+// ────────────────────────────────────
+// AUTH FLOW
+// ────────────────────────────────────
+function showLogin() {
+  hide('loginPage'); hide('cadastroPage'); hide('profilesPage');
+  document.getElementById('loginPage').style.display = 'flex';
+  document.getElementById('loginPage').style.flexDirection = 'column';
+  document.getElementById('loginPage').style.alignItems = 'center';
+  document.getElementById('loginPage').style.justifyContent = 'center';
+  document.getElementById('loginPage').style.minHeight = '100vh';
+}
+
+function showCadastro() {
+  hide('loginPage');
+  document.getElementById('cadastroPage').style.display = 'flex';
+  document.getElementById('cadastroPage').style.flexDirection = 'column';
+  document.getElementById('cadastroPage').style.alignItems = 'center';
+  document.getElementById('cadastroPage').style.justifyContent = 'center';
+  document.getElementById('cadastroPage').style.minHeight = '100vh';
+}
+
+function loginApp() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const senha = document.getElementById('loginSenha').value;
+  if (!email || !senha) { showToast('⚠️ Preencha email e senha'); return; }
+  // Permite login com UID direto (campo email) para o administrador
+  const uid = email.trim();
+  currentUser = { email, uid, name: email.split('@')[0], initials: email[0].toUpperCase() };
+  if (isAdmin()) {
+    coins = Infinity;
+    showToast('👑 Bem-vindo, Administrador! Acesso total liberado.');
+  } else {
+    coins = parseInt(localStorage.getItem('royalCoins') || '50');
+    showToast('✅ Bem-vindo ao Royal Streams!');
+  }
+  updateCoinsUI();
+  hide('loginPage');
+  showProfiles();
+}
+
+function cadastrarApp() {
+  const nome  = document.getElementById('cadNome').value.trim();
+  const email = document.getElementById('cadEmail').value.trim();
+  const senha = document.getElementById('cadSenha').value;
+  if (!nome || !email || !senha) { showToast('⚠️ Preencha todos os campos'); return; }
+  currentUser = { email, name: nome, initials: nome[0].toUpperCase() };
+  coins = 100;
+  localStorage.setItem('royalCoins', coins);
+  updateCoinsUI();
+  hide('cadastroPage');
+  showProfiles();
+  showToast('🎉 Conta criada! +100 Royal Coins de bônus!');
+}
+
+function logoutApp() {
+  currentUser = null;
+  hide('mainApp'); hide('bottomNav');
+  document.getElementById('mainHeader').style.display = 'none';
+  showLogin();
+}
+
+// ────────────────────────────────────
+// PROFILES
+// ────────────────────────────────────
+function showProfiles() {
+  document.getElementById('profilesPage').style.display = 'flex';
+  document.getElementById('profilesPage').style.flexDirection = 'column';
+  document.getElementById('profilesPage').style.alignItems = 'center';
+  document.getElementById('profilesPage').style.justifyContent = 'center';
+  document.getElementById('profilesPage').style.minHeight = '100vh';
+}
+
+function selectProfile(name, emoji, bg) {
+  hide('profilesPage');
+  document.getElementById('mainApp').style.display = 'block';
+  document.getElementById('mainHeader').style.display = 'flex';
+  document.getElementById('bottomNav').style.display = 'flex';
+  updateCoinsUI();
+  if (!loadedPages.has('home')) { loadHomePage(); loadedPages.add('home'); }
+}
+
+// ────────────────────────────────────
+// PAGE NAVIGATION
+// ────────────────────────────────────
+function goPage(p) {
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.getElementById('page-' + p).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const navEl = document.getElementById('nav-' + p);
+  if (navEl) navEl.classList.add('active');
+
+  if (!loadedPages.has(p)) {
+    if (p === 'movies')  { loadMoviesPage(); }
+    if (p === 'series')  { loadSeriesPage(); }
+    if (p === 'animes')  { loadAnimesPage(); }
+    if (p === 'ranking') { loadRanking(); }
+    loadedPages.add(p);
+  }
+}
+
+// ────────────────────────────────────
+// DRAWER
+// ────────────────────────────────────
+function openDrawer() {
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawerOverlay').classList.add('open');
+}
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawerOverlay').classList.remove('open');
+}
+
+// ────────────────────────────────────
+// COINS
+// ────────────────────────────────────
+function updateCoinsUI() {
+  const display = isAdmin() ? '∞ 👑' : coins;
+  document.getElementById('coinsDisplay').innerText = display;
+  document.getElementById('drawerCoins').innerText  = display;
+}
+
+// ────────────────────────────────────
+// FETCH HELPERS
+// ────────────────────────────────────
+async function tmdb(endpoint) {
+  const r = await fetch(`${API}${endpoint}&api_key=${TMDB}&language=pt-BR`);
+  return r.json();
+}
+
+// ────────────────────────────────────
+// HOME PAGE
+// ────────────────────────────────────
+async function loadHomePage() {
+  // Hero
+  const data = await tmdb('/movie/popular?page=1');
+  const hero = data.results[Math.floor(Math.random() * 5)];
+  currentHero = hero;
+  document.getElementById('heroBg').style.backgroundImage = `url(${OIMG}${hero.backdrop_path})`;
+  document.getElementById('heroTitle').innerText = hero.title;
+  document.getElementById('heroRating').innerText = `⭐ ${hero.vote_average.toFixed(1)}`;
+  document.getElementById('heroYear').innerText = hero.release_date?.slice(0,4) || '';
+  document.getElementById('heroOverview').innerText = hero.overview;
+
+  // Rows
+  renderRow('rowPopular', data.results.slice(0,10));
+
+  const seriesData = await tmdb('/tv/popular?page=1');
+  renderRow('rowSeries', seriesData.results.slice(0,10), true);
+
+  const animeData = await tmdb('/discover/tv?with_genres=16&sort_by=popularity.desc&page=1');
+  renderRow('rowAnimes', animeData.results.slice(0,10), true);
+
+  const newData = await tmdb('/movie/now_playing?page=1');
+  renderRow('rowNew', newData.results.slice(0,10));
+}
+
+async function loadMoviesPage() {
+  const [pop, top] = await Promise.all([
+    tmdb('/movie/popular?page=1'),
+    tmdb('/movie/top_rated?page=1')
+  ]);
+  renderRow('rowMoviesPage', pop.results);
+  renderRow('rowTopRated', top.results);
+}
+
+async function loadSeriesPage() {
+  const [pop, top, air] = await Promise.all([
+    tmdb('/tv/popular?page=1'),
+    tmdb('/tv/top_rated?page=1'),
+    tmdb('/tv/on_the_air?page=1')
+  ]);
+  renderRow('rowSeriesPage', pop.results, true);
+  renderRow('rowSeriesTop', top.results, true);
+  renderRow('rowSeriesNew', air.results, true);
+}
+
+async function loadAnimesPage() {
+  const [pop, classic] = await Promise.all([
+    tmdb('/discover/tv?with_genres=16&sort_by=popularity.desc&page=1'),
+    tmdb('/discover/tv?with_genres=16&sort_by=vote_average.desc&page=1')
+  ]);
+  renderRow('rowAnimesPage', pop.results, true);
+  renderRow('rowAnimesClassic', classic.results, true);
+}
+
+async function loadRanking() {
+  const data = await tmdb('/movie/top_rated?page=1');
+  const list = document.getElementById('rankingList');
+  list.innerHTML = '';
+  data.results.slice(0,10).forEach((m, i) => {
+    const item = document.createElement('div');
+    item.className = 'ranking-item';
+    item.innerHTML = `
+      <div class="rank-num ${i<3?'top3':''}">${i+1}</div>
+      <img class="rank-img" src="${IMG}${m.poster_path}" alt="${m.title}" loading="lazy">
+      <div class="rank-info">
+        <div class="rank-title">${m.title}</div>
+        <div class="rank-meta">⭐ ${m.vote_average.toFixed(1)} · ${m.release_date?.slice(0,4)||'—'}</div>
+      </div>
+      <div class="rank-arrow">›</div>
+    `;
+    item.onclick = () => openPlayerWithItem(m);
+    list.appendChild(item);
+  });
+}
+
+// ────────────────────────────────────
+// RENDER CARDS
+// ────────────────────────────────────
+function renderSkeletons(containerId, count = 8) {
+  const c = document.getElementById(containerId);
+  c.innerHTML = Array(count).fill(`
+    <div class="card-skeleton">
+      <div class="skeleton-img"></div>
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line short"></div>
+    </div>
+  `).join('');
+}
+
+function renderRow(containerId, items, isTv = false) {
+  const c = document.getElementById(containerId);
+  if (!c) return;
+  c.innerHTML = '';
+  items.forEach(item => {
+    if (!item.poster_path) return;
+    const title = item.title || item.name || '';
+    const year  = (item.release_date || item.first_air_date || '').slice(0,4);
+    const div   = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = `
+      <img src="${IMG}${item.poster_path}" alt="${title}" loading="lazy">
+      <div class="card-overlay"><div class="card-play-icon">▶</div></div>
+      <div class="card-info">
+        <div class="card-title">${title}</div>
+        <div class="card-meta">⭐ ${item.vote_average?.toFixed(1)||'—'} · ${year}</div>
+      </div>
+    `;
+    div.onclick = () => openPlayerWithItem(item, isTv);
+    c.appendChild(div);
+  });
+}
+
+// ────────────────────────────────────
+// PLAYER
+// ────────────────────────────────────
+function openPlayer() {
+  if (currentHero) openPlayerWithItem(currentHero);
+}
+
+function openPlayerWithItem(item, isTv = false) {
+  const admin = isAdmin();
+  if (!admin) {
+    if (coins < 10) { showToast('🪙 Moedas insuficientes! Precisa de 10 coins.'); return; }
+    coins -= 10;
+    localStorage.setItem('royalCoins', coins);
+    updateCoinsUI();
+  }
+
+  const title    = item.title || item.name || '';
+  const overview = item.overview || '';
+
+  let embedUrl;
+  if (admin) {
+    // ADM: usa embed alternativo sem anúncios (superembed/multiembed)
+    embedUrl = isTv
+      ? `https://multiembed.mov/?video_id=${item.id}&tmdb=1&s=1&e=1`
+      : `https://multiembed.mov/?video_id=${item.id}&tmdb=1`;
+  } else {
+    embedUrl = isTv
+      ? `https://vidsrc.to/embed/tv/${item.id}`
+      : `https://vidsrc.to/embed/movie/${item.id}`;
+  }
+
+  document.getElementById('playerTitle').innerText    = title;
+  document.getElementById('playerOverview').innerText = overview;
+  document.getElementById('playerFrame').src           = embedUrl;
+  document.getElementById('playerModal').classList.add('open');
+
+  // Controles visuais ADM vs usuário
+  const vipBadge      = document.getElementById('vipBadge');
+  const admBadge      = document.getElementById('admBadgePlayer');
+  const adBlockLayer  = document.getElementById('adBlockLayer');
+
+  if (admin) {
+    if (vipBadge)     vipBadge.style.display     = 'none';
+    if (admBadge)     admBadge.style.display      = '';
+    if (adBlockLayer) adBlockLayer.style.display  = 'block';
+    showToast('👑 ADM — Reprodução gratuita · Sem anúncios');
+  } else {
+    if (vipBadge)     vipBadge.style.display     = '';
+    if (admBadge)     admBadge.style.display      = 'none';
+    if (adBlockLayer) adBlockLayer.style.display  = 'none';
+    showToast(`🪙 -10 coins · Saldo: ${coins}`);
+  }
+}
+
+function closePlayer() {
+  document.getElementById('playerModal').classList.remove('open');
+  document.getElementById('playerFrame').src = '';
+}
+
+// ────────────────────────────────────
+// GENRE FILTER
+// ────────────────────────────────────
+async function filterGenre(el, genreId) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  const endpoint = genreId === 0
+    ? '/movie/popular?page=1'
+    : `/discover/movie?with_genres=${genreId}&sort_by=popularity.desc&page=1`;
+  const data = await tmdb(endpoint);
+  renderRow('rowMoviesPage', data.results);
+}
+
+function filterMovies() {
+  const q = document.getElementById('searchMovies').value.toLowerCase();
+  document.querySelectorAll('#rowMoviesPage .card').forEach(card => {
+    const title = card.querySelector('.card-title')?.innerText.toLowerCase() || '';
+    card.style.display = title.includes(q) ? '' : 'none';
+  });
+}
+
+// ────────────────────────────────────
+// FEEDBACK
+// ────────────────────────────────────
+function rateStar(n) {
+  starRating = n;
+  document.querySelectorAll('.star').forEach((s, i) => {
+    s.classList.toggle('active', i < n);
+  });
+}
+
+function sendFeedback() {
+  const text = document.getElementById('feedbackText').value.trim();
+  if (!starRating) { showToast('⚠️ Selecione uma nota!'); return; }
+  showToast('💬 Feedback enviado! Obrigado! +20 coins 🪙');
+  coins += 20;
+  localStorage.setItem('royalCoins', coins);
+  updateCoinsUI();
+  document.getElementById('feedbackText').value = '';
+  starRating = 0;
+  document.querySelectorAll('.star').forEach(s => s.classList.remove('active'));
+}
+
+// ────────────────────────────────────
+// TOAST
+// ────────────────────────────────────
+let toastTimeout;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.innerText = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => el.classList.remove('show'), 3200);
+}
+
+// ────────────────────────────────────
+// UTIL
+// ────────────────────────────────────
+function hide(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = 'none';
+}
+
+// Load skeletons immediately for home
+['rowPopular','rowSeries','rowAnimes','rowNew'].forEach(id => renderSkeletons(id));
+
+// ════════════════════════════════════════
+// ROYAL STREAMS — SINCRONIZAÇÃO FIREBASE
+// Roda em segundo plano ao abrir o app
+// ════════════════════════════════════════
+(async function iniciarSyncBackground() {
+  // Aguarda o app carregar antes de iniciar o sync
+  await new Promise(r => setTimeout(r, 3000));
+
+  // --- Firebase (ESM via CDN) ---
+  const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+  const { getDatabase, ref, set, get, child } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAlAx_HCmlYXvsUuKxOopQsAAoHUmjp5NU",
+    authDomain: "royalcore-royalstreams.firebaseapp.com",
+    databaseURL: "https://royalcore-royalstreams-default-rtdb.firebaseio.com",
+    projectId: "royalcore-royalstreams",
+    storageBucket: "royalcore-royalstreams.firebasestorage.app",
+    messagingSenderId: "1065662141942",
+    appId: "1:1065662141942:web:0dc0d903bb618fdfc863d7",
+    measurementId: "G-3L5EWWDVKM"
+  };
+
+  let fbApp, db;
+  try {
+    fbApp = initializeApp(firebaseConfig, "royal-sync");
+    db    = getDatabase(fbApp);
+    console.log("[Royal Sync] Firebase conectado.");
+  } catch (e) {
+    console.warn("[Royal Sync] Firebase init falhou:", e.message);
+    return;
+  }
+
+  const TMDB_KEY = "93f6cc12e6897cce8be566c0e2f43a3b";
+  const TMDB_URL = "https://api.themoviedb.org/3";
+
+  // --- Salvar ou atualizar item ---
+  async function salvarOuAtualizar(item, tipo) {
+    try {
+      const itemRef  = ref(db, `royal-streams/${tipo}/${item.id}`);
+      const snapshot = await get(child(ref(db), `royal-streams/${tipo}/${item.id}`));
+      if (snapshot.exists()) {
+        await set(itemRef, { ...snapshot.val(), ...item });
+      } else {
+        await set(itemRef, item);
+      }
+    } catch (e) {
+      console.warn("[Royal Sync] Erro ao salvar item:", item.id, e.message);
+    }
+  }
+
+  // --- Processar lote ---
+  async function processarLote(items, tipo, filtroAnimes = false) {
+    const promises = items.map(async item => {
+      if (filtroAnimes && !item.genre_ids.includes(16)) return;
+      try {
+        const res = await fetch(
+          `${TMDB_URL}/${tipo}/${item.id}?api_key=${TMDB_KEY}&language=pt-BR&append_to_response=videos,credits,reviews`
+        );
+        const d = await res.json();
+        const trailer = d.videos?.results?.find(v => v.type === "Trailer")?.key;
+        const registro = {
+          id:           d.id,
+          title:        d.title || d.name,
+          overview:     d.overview,
+          release_date: d.release_date || d.first_air_date,
+          poster_url:   d.poster_path   ? `https://image.tmdb.org/t/p/w500${d.poster_path}`   : null,
+          backdrop_url: d.backdrop_path ? `https://image.tmdb.org/t/p/w780${d.backdrop_path}` : null,
+          vote_average: d.vote_average,
+          trailer_url:  trailer ? `https://www.youtube.com/watch?v=${trailer}` : null,
+          cast:         (d.credits?.cast || []).slice(0, 10).map(c => ({ name: c.name, character: c.character })),
+          reviews:      (d.reviews?.results || []).slice(0, 5).map(r => ({ author: r.author, content: r.content })),
+          tmdb_url:     `https://www.themoviedb.org/${tipo}/${d.id}`,
+          tipo,
+          play_url:     null,
+          synced_at:    new Date().toISOString()
+        };
+        await salvarOuAtualizar(registro, tipo);
+      } catch (e) {
+        console.warn("[Royal Sync] Erro no item", item.id, e.message);
+      }
+    });
+    await Promise.all(promises);
+  }
+
+  // --- Sincronizar tipo (max 3 páginas para não travar) ---
+  async function sincronizarConteudo(tipo = "movie", filtroAnimes = false, maxPages = 3) {
+    console.log(`[Royal Sync] Iniciando: ${tipo}${filtroAnimes ? " (animes)" : ""}`);
+    for (let page = 1; page <= maxPages; page++) {
+      try {
+        const res  = await fetch(`${TMDB_URL}/${tipo}/popular?api_key=${TMDB_KEY}&language=pt-BR&page=${page}`);
+        const data = await res.json();
+        const loteSize = 5;
+        for (let i = 0; i < data.results.length; i += loteSize) {
+          await processarLote(data.results.slice(i, i + loteSize), tipo, filtroAnimes);
+          await new Promise(r => setTimeout(r, 600)); // delay entre lotes
+        }
+        console.log(`[Royal Sync] ${tipo} — página ${page}/${Math.min(maxPages, data.total_pages)} concluída.`);
+      } catch (e) {
+        console.warn(`[Royal Sync] Erro na página ${page} de ${tipo}:`, e.message);
+        break;
+      }
+    }
+    console.log(`[Royal Sync] Finalizado: ${tipo}`);
+  }
+
+  // --- Executar sync completo em background ---
+  console.log("=== Royal Streams: sync automático iniciado ===");
+  await sincronizarConteudo("movie");
+  await sincronizarConteudo("tv");
+  await sincronizarConteudo("tv", true); // Animes
+  console.log("=== Royal Streams: sync automático concluído ===");
+})();
+</script>
+</body>
+</html>
