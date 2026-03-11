@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#06080f">
+<title>Royal Streams</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════
+   VARIÁVEIS & RESET
+═══════════════════════════════════════════ */
+:root {
+  --gold:#c9a227; --gold-l:#e8c456; --gold-d:#a07d14; --gold-hover:#dbb535;
+  --red:#c8102e;  --green:#22c55e;
+  --bg:#06080f;   --bg2:#090c15;  --s1:#0e1220; --s2:#131828;
+  --text:#fff;    --muted:#8892a4; --border:rgba(255,255,255,.07);
+  --fd:'Cinzel',serif; --fb:'Outfit',sans-serif;
+  --nav-h:66px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{min-height:100%;}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);overflow-x:hidden;}
+button,input,select,textarea{font-family:var(--fb);}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--gold-d);border-radius:2px;}
+
+/* ═══════════════════════════════════════════
+   BACKGROUND ATMOSFÉRICO
+═══════════════════════════════════════════ */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% -10%,rgba(201,162,39,.09) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 110%,rgba(201,162,39,.06) 0%,transparent 55%);
+}
+
+/* ═══════════════════════════════════════════
+   SCREENS (camadas de navegação)
+═══════════════════════════════════════════ */
+.screen{display:none;min-height:100vh;flex-direction:column;position:relative;z-index:1;}
+.screen.show{display:flex;animation:fadeUp .38s ease both;}
+#appScreen{display:none;padding-bottom:var(--nav-h);}
+#appScreen.show{display:block;animation:fadeUp .38s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+
+/* ═══════════════════════════════════════════
+   COMPONENTES COMUNS
+═══════════════════════════════════════════ */
+
+/* Campos */
+.field-label{display:block;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.field-wrap{position:relative;}
+.field-wrap input{
+  width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);
+  border-radius:13px;padding:14px 16px;color:var(--text);font-size:14px;outline:none;
+  transition:border .25s,box-shadow .25s;}
+.field-wrap input:focus{border-color:rgba(201,162,39,.45);box-shadow:0 0 0 3px rgba(201,162,39,.1);}
+.field-wrap input::placeholder{color:rgba(255,255,255,.2);}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.eye-btn{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:4px;}
+
+/* Botão dourado principal */
+.btn-gold{
+  width:100%;padding:15px;background:linear-gradient(135deg,var(--gold-l),var(--gold),var(--gold-d));
+  border:none;border-radius:14px;color:#000;font-family:var(--fd);font-size:13px;font-weight:700;
+  letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;
+  box-shadow:0 6px 24px rgba(201,162,39,.28);margin-top:4px;}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(201,162,39,.44);}
+.btn-gold:active{transform:none;}
+.btn-gold:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+
+/* Botão fantasma */
+.btn-ghost{
+  width:100%;padding:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);
+  border-radius:14px;color:var(--text);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;}
+.btn-ghost:hover{border-color:rgba(201,162,39,.3);background:rgba(201,162,39,.06);color:var(--gold-l);}
+
+/* Botão primário (dentro do modal) */
+.btn-primary{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  background:linear-gradient(135deg,var(--gold-l),var(--gold),var(--gold-d));
+  border:none;color:#000;font-family:var(--fd);font-size:12px;font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;padding:13px 20px;border-radius:12px;
+  cursor:pointer;transition:all .2s;width:100%;margin-top:12px;
+  box-shadow:0 4px 20px rgba(201,162,39,.25);}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(201,162,39,.42);}
+
+/* Divisor */
+.divider{display:flex;align-items:center;gap:12px;margin:2px 0;}
+.divider span{font-size:11px;color:var(--muted);}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* Toast */
+.toast{
+  position:fixed;bottom:calc(var(--nav-h) + 14px);left:50%;
+  transform:translateX(-50%) translateY(14px);
+  background:linear-gradient(135deg,var(--s2),var(--s1));
+  border:1px solid rgba(201,162,39,.22);color:var(--text);
+  padding:10px 22px;border-radius:40px;font-size:13px;
+  z-index:10000;opacity:0;transition:all .3s;white-space:nowrap;
+  box-shadow:0 8px 24px rgba(0,0,0,.5);pointer-events:none;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.auth{bottom:36px;}
+
+/* Mensagem de erro */
+.error-msg{
+  background:rgba(200,16,46,.1);border:1px solid rgba(200,16,46,.25);
+  border-radius:10px;padding:10px 14px;font-size:12px;color:#ff6b7a;display:none;}
+.error-msg.show{display:block;}
+
+/* Logo */
+.logo-crown{
+  font-size:56px;line-height:1;text-align:center;
+  filter:drop-shadow(0 0 22px rgba(201,162,39,.7));
+  animation:crownFloat 3s ease-in-out infinite;}
+@keyframes crownFloat{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-5px) scale(1.04);}}
+.logo-text{
+  font-family:var(--fd);font-size:28px;font-weight:900;letter-spacing:4px;text-transform:uppercase;
+  background:linear-gradient(135deg,var(--gold-l),var(--gold),var(--gold-d));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  text-align:center;margin-bottom:6px;}
+.logo-tag{font-size:11px;color:var(--muted);letter-spacing:2.5px;text-transform:uppercase;text-align:center;margin-bottom:44px;}
+
+/* Skeleton */
+.skeleton{
+  background:linear-gradient(90deg,rgba(255,255,255,.04) 25%,rgba(255,255,255,.09) 50%,rgba(255,255,255,.04) 75%);
+  background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:10px;}
+@keyframes shimmer{0%{background-position:200% center;}100%{background-position:-200% center;}}
+
+/* Empty */
+.empty-state{
+  grid-column:1/-1;text-align:center;padding:56px 20px;
+  display:flex;flex-direction:column;align-items:center;gap:10px;}
+.empty-icon{font-size:46px;opacity:.3;animation:crownFloat 2.5s ease-in-out infinite;}
+.empty-state p{color:var(--muted);font-size:13px;}
+
+/* ═══════════════════════════════════════════
+   TELA LOGIN
+═══════════════════════════════════════════ */
+#loginScreen{align-items:center;justify-content:center;padding:32px 28px;gap:0;}
+.login-card{width:100%;max-width:380px;display:flex;flex-direction:column;gap:14px;z-index:1;}
+.forgot-link{text-align:center;font-size:12px;color:var(--muted);cursor:pointer;padding:4px;transition:color .2s;}
+.forgot-link:hover{color:var(--gold);}
+
+/* ═══════════════════════════════════════════
+   DRAWER CADASTRO
+═══════════════════════════════════════════ */
+.drawer-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.86);backdrop-filter:blur(16px);
+  z-index:900;display:none;align-items:flex-end;justify-content:center;}
+.drawer-overlay.open{display:flex;}
+.drawer{
+  background:linear-gradient(160deg,#131828 0%,#0e1220 100%);
+  border-radius:24px 24px 0 0;border-top:1px solid rgba(201,162,39,.18);
+  width:100%;max-width:480px;max-height:93vh;overflow-y:auto;
+  padding:0 0 44px;animation:drawerUp .38s cubic-bezier(.34,1.56,.64,1);}
+@keyframes drawerUp{from{transform:translateY(100%);opacity:.4;}to{transform:none;opacity:1;}}
+.drawer-handle{width:40px;height:4px;background:rgba(255,255,255,.13);border-radius:2px;margin:14px auto 22px;}
+.drawer-header{padding:0 22px 18px;border-bottom:1px solid var(--border);}
+.drawer-title{
+  font-family:var(--fd);font-size:20px;font-weight:700;letter-spacing:2px;
+  background:linear-gradient(135deg,var(--gold-l),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.drawer-sub{font-size:12px;color:var(--muted);margin-top:4px;}
+.drawer-body{padding:20px 22px;display:flex;flex-direction:column;gap:14px;}
+
+/* Avatar picker */
+.avatar-picker-label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.avatar-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+.avatar-opt{
+  aspect-ratio:1;border-radius:50%;cursor:pointer;font-size:22px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.05);border:2px solid transparent;transition:all .2s;}
+.avatar-opt:hover{border-color:rgba(201,162,39,.4);background:rgba(201,162,39,.1);}
+.avatar-opt.selected{border-color:var(--gold);background:rgba(201,162,39,.15);box-shadow:0 0 0 3px rgba(201,162,39,.12);}
+
+/* ═══════════════════════════════════════════
+   TELA QUEM ESTÁ ASSISTINDO
+═══════════════════════════════════════════ */
+#profilesScreen{align-items:center;justify-content:center;padding:32px 24px;}
+.profiles-inner{position:relative;z-index:1;width:100%;max-width:400px;text-align:center;}
+.profiles-title{
+  font-family:var(--fd);font-size:22px;font-weight:700;letter-spacing:3px;
+  background:linear-gradient(135deg,var(--gold-l),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:6px;}
+.profiles-sub{font-size:13px;color:var(--muted);margin-bottom:36px;}
+.profiles-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:26px;}
+.profile-btn{
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:18px;padding:24px 16px 18px;cursor:pointer;transition:all .28s;position:relative;}
+.profile-btn:hover{border-color:rgba(201,162,39,.35);background:rgba(201,162,39,.07);transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.5);}
+.profile-avatar{
+  width:72px;height:72px;border-radius:50%;font-size:32px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--s2),var(--s1));
+  border:2px solid rgba(255,255,255,.1);transition:all .28s;position:relative;}
+.profile-btn:hover .profile-avatar{border-color:rgba(201,162,39,.5);box-shadow:0 0 20px rgba(201,162,39,.25);}
+.profile-ring{position:absolute;inset:-3px;border-radius:50%;border:2px solid transparent;border-top-color:var(--gold);display:none;}
+.profile-btn.loading .profile-ring{display:block;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.profile-name{font-size:13px;font-weight:600;color:rgba(255,255,255,.85);}
+.profile-type{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;}
+.profile-add-btn{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  background:none;border:1.5px dashed rgba(255,255,255,.12);
+  border-radius:18px;padding:24px 16px 18px;cursor:pointer;transition:all .25s;color:var(--muted);}
+.profile-add-btn:hover{border-color:rgba(201,162,39,.35);color:var(--gold);}
+.profile-add-icon{width:72px;height:72px;border-radius:50%;font-size:28px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.04);}
+.profiles-manage{font-size:12px;color:var(--muted);cursor:pointer;padding:8px;transition:color .2s;}
+.profiles-manage:hover{color:var(--gold);}
+
+/* ═══════════════════════════════════════════
+   APP - HEADER
+═══════════════════════════════════════════ */
+.app-header{
+  padding:18px 18px 12px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;
+  background:linear-gradient(to bottom,rgba(6,8,15,.98),rgba(6,8,15,0));
+  backdrop-filter:blur(20px);}
+.logo-app{
+  font-family:var(--fd);font-size:20px;font-weight:900;letter-spacing:3px;text-transform:uppercase;
+  background:linear-gradient(135deg,var(--gold-l),var(--gold),var(--gold-d));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  display:flex;align-items:center;gap:8px;}
+.logo-app-crown{
+  font-size:18px;-webkit-text-fill-color:var(--gold);
+  filter:drop-shadow(0 0 6px rgba(201,162,39,.6));animation:crownFloat 3s ease-in-out infinite;}
+.hdr-right{display:flex;align-items:center;gap:8px;}
+.hdr-avatar{
+  width:36px;height:36px;border-radius:50%;font-size:18px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(201,162,39,.12);border:1.5px solid rgba(201,162,39,.3);
+  cursor:pointer;transition:all .2s;}
+.hdr-avatar:hover{box-shadow:0 0 12px rgba(201,162,39,.4);}
+.hdr-btn{
+  background:rgba(255,255,255,.05);border:1px solid var(--border);
+  color:var(--muted);width:36px;height:36px;border-radius:11px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .2s;font-size:15px;}
+.hdr-btn:hover{color:var(--gold);border-color:rgba(201,162,39,.3);background:rgba(201,162,39,.08);}
+
+/* ═══════════════════════════════════════════
+   APP - INNER PAGES
+═══════════════════════════════════════════ */
+.inner-page{display:none;}
+.inner-page.active{display:block;animation:fadeUp .3s ease;}
+
+/* Busca */
+.search-wrap{
+  margin:0 16px 18px;display:flex;gap:8px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;padding:5px 5px 5px 14px;transition:border .25s,box-shadow .25s;}
+.search-wrap:focus-within{border-color:rgba(201,162,39,.4);box-shadow:0 0 0 3px rgba(201,162,39,.08);}
+#searchInput{flex:1;background:none;border:none;outline:none;color:var(--text);font-size:14px;padding:7px 0;}
+#searchInput::placeholder{color:var(--muted);}
+#searchBtn{
+  background:linear-gradient(135deg,var(--gold),var(--gold-d));border:none;color:#000;
+  font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:1.5px;
+  padding:10px 16px;border-radius:10px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+#searchBtn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(201,162,39,.4);}
+
+/* Welcome band */
+.welcome-band{
+  margin:0 16px 20px;padding:18px;
+  background:linear-gradient(135deg,rgba(201,162,39,.08),rgba(201,162,39,.03));
+  border:1px solid rgba(201,162,39,.15);border-radius:16px;}
+.welcome-band h3{font-family:var(--fd);font-size:13px;letter-spacing:2px;color:var(--gold-l);margin-bottom:5px;text-transform:uppercase;}
+.welcome-band p{font-size:12px;color:var(--muted);line-height:1.7;}
+
+/* Seção */
+.sec-header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 10px;}
+.sec-title{font-family:var(--fd);font-size:13px;letter-spacing:2.5px;text-transform:uppercase;display:flex;align-items:center;gap:10px;}
+.sec-title::before{content:'';width:3px;height:16px;background:linear-gradient(to bottom,var(--gold-l),var(--gold-d));border-radius:2px;}
+.sec-count{font-size:11px;color:var(--muted);background:rgba(255,255,255,.05);padding:3px 9px;border-radius:20px;border:1px solid var(--border);}
+
+/* Grid header por página */
+.gp-header{padding:16px 18px 14px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--border);margin-bottom:10px;}
+.gp-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;background:rgba(201,162,39,.1);border:1px solid rgba(201,162,39,.2);}
+.gp-title{font-family:var(--fd);font-size:17px;font-weight:700;letter-spacing:2px;text-transform:uppercase;}
+.gp-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+
+/* ═══════════════════════════════════════════
+   GRID DE CARDS
+═══════════════════════════════════════════ */
+.grid-container{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:10px;padding:0 12px 20px;}
+.grid-card{
+  position:relative;cursor:pointer;border-radius:12px;overflow:hidden;
+  background:var(--s1);aspect-ratio:2/3;transition:transform .25s,box-shadow .25s;}
+.grid-card:hover{transform:scale(1.04) translateY(-2px);box-shadow:0 14px 36px rgba(0,0,0,.7),0 0 0 1px rgba(201,162,39,.2);z-index:5;}
+.grid-card img{width:100%;height:100%;object-fit:cover;display:block;border-radius:0;transition:filter .3s;}
+.grid-card:hover img{filter:brightness(1.06);}
+.grid-card .overlay{
+  position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(to top,rgba(0,0,0,.92) 0%,transparent 100%);
+  padding:22px 8px 8px;font-size:11px;font-weight:500;
+  color:rgba(255,255,255,.9);text-align:center;line-height:1.3;}
+.card-badge{
+  position:absolute;top:6px;left:6px;
+  background:linear-gradient(135deg,var(--gold),var(--gold-d));
+  color:#000;font-family:var(--fd);font-size:9px;font-weight:700;
+  letter-spacing:.8px;padding:3px 7px;border-radius:5px;}
+/* Botão favorito / ADD */
+.fav-btn{
+  position:absolute;top:6px;right:6px;
+  background:linear-gradient(135deg,var(--gold),var(--gold-d));
+  color:#000;padding:4px 8px;border-radius:6px;
+  font-size:10px;font-family:var(--fd);font-weight:700;letter-spacing:.8px;
+  cursor:pointer;border:none;transition:all .2s;box-shadow:0 2px 8px rgba(201,162,39,.35);}
+.fav-btn:hover{transform:scale(1.12);box-shadow:0 4px 12px rgba(201,162,39,.5);}
+.fav-btn.heart{font-size:14px;padding:4px 7px;}
+
+/* ═══════════════════════════════════════════
+   BOTTOM NAV
+═══════════════════════════════════════════ */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);
+  background:rgba(4,5,12,.97);border-top:1px solid rgba(201,162,39,.1);
+  display:flex;justify-content:space-around;align-items:center;
+  padding:0 4px;backdrop-filter:blur(20px);z-index:200;}
+.nav-btn{
+  background:none;border:none;color:var(--muted);font-family:var(--fb);
+  font-size:10px;font-weight:500;letter-spacing:.5px;
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  padding:6px 10px;border-radius:12px;transition:all .2s;
+  cursor:pointer;flex:1;position:relative;}
+.nav-icon{font-size:20px;transition:transform .2s;display:block;}
+.nav-btn.active{color:var(--gold);}
+.nav-btn.active .nav-icon{transform:scale(1.12);filter:drop-shadow(0 0 6px rgba(201,162,39,.5));}
+.nav-btn.active::after{
+  content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);
+  width:28px;height:3px;background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  border-radius:2px 2px 0 0;}
+
+/* ═══════════════════════════════════════════
+   MODAIS (bottom sheet)
+═══════════════════════════════════════════ */
+.modal-bg{
+  position:fixed;inset:0;background:rgba(0,0,0,.88);
+  backdrop-filter:blur(18px);display:none;
+  align-items:flex-end;justify-content:center;z-index:999;}
+.modal-bg.open{display:flex;}
+.modal-card{
+  background:linear-gradient(160deg,#131828 0%,#0e1220 100%);
+  border-radius:24px 24px 0 0;border-top:1px solid rgba(201,162,39,.15);
+  width:100%;max-width:480px;max-height:92vh;overflow-y:auto;
+  position:relative;animation:drawerUp .35s cubic-bezier(.34,1.56,.64,1);}
+.modal-drag{width:40px;height:4px;background:rgba(255,255,255,.12);border-radius:2px;margin:14px auto 0;}
+/* Banner */
+.modal-banner{position:relative;aspect-ratio:16/9;overflow:hidden;}
+.modal-banner img{width:100%;height:100%;object-fit:cover;display:block;border-radius:0;}
+.modal-banner-grad{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.08),#0e1220);}
+.modal-close{
+  position:absolute;top:12px;right:12px;background:rgba(0,0,0,.7);
+  border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.8);
+  width:34px;height:34px;border-radius:50%;font-size:14px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;z-index:10;}
+.modal-close:hover{background:rgba(201,162,39,.2);color:var(--gold);}
+/* Body */
+.modal-body{padding:14px 18px 30px;}
+.modal-meta{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px;}
+.mpill{
+  display:flex;align-items:center;gap:4px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);
+  color:var(--muted);font-size:11px;padding:4px 10px;border-radius:20px;}
+.mpill.gold{background:rgba(201,162,39,.1);border-color:rgba(201,162,39,.25);color:var(--gold-l);}
+.modal-title{font-family:var(--fd);font-size:20px;font-weight:700;margin-bottom:8px;line-height:1.2;}
+.modal-overview{color:rgba(255,255,255,.6);font-size:13px;line-height:1.65;margin-bottom:14px;}
+.modal-info-row{display:flex;align-items:center;gap:6px;font-size:13px;color:rgba(255,255,255,.7);margin-bottom:6px;}
+.modal-info-row strong{color:var(--gold-l);}
+.modal-divider{height:1px;background:var(--border);margin:14px 0;}
+
+/* Player */
+.player-label{
+  font-family:var(--fd);font-size:11px;letter-spacing:2px;color:var(--gold);
+  text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.player-label::before{
+  content:'';width:6px;height:6px;background:var(--green);border-radius:50%;
+  box-shadow:0 0 6px var(--green);animation:blink 1.5s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+#videoPlayer{
+  width:100%;border-radius:13px;max-height:240px;background:#000;
+  display:block;border:1px solid rgba(255,255,255,.06);}
+
+/* Episódios */
+.eps-label{font-family:var(--fd);font-size:11px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:6px;}
+#episodesList{display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto;margin-top:12px;}
+.ep-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 12px;background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.06);border-radius:10px;
+  cursor:pointer;transition:all .2s;font-size:13px;color:rgba(255,255,255,.7);}
+.ep-item:hover{background:rgba(201,162,39,.08);border-color:rgba(201,162,39,.2);color:var(--text);}
+.ep-num{font-family:var(--fd);font-size:11px;color:var(--gold);min-width:26px;}
+
+/* Notificações */
+.notif-item{
+  display:flex;align-items:flex-start;gap:10px;
+  background:rgba(201,162,39,.05);border:1px solid rgba(201,162,39,.12);
+  padding:12px;border-radius:12px;margin-bottom:8px;
+  font-size:13px;color:rgba(255,255,255,.8);line-height:1.5;}
+.notif-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:5px;box-shadow:0 0 6px rgba(201,162,39,.6);}
+</style>
+</head>
+<body>
+
+<!-- TOAST GLOBAL -->
+<div id="toastEl" class="toast"></div>
+
+<!-- ═══════════════════════════════════════════════════
+     TELA 1 — LOGIN
+═══════════════════════════════════════════════════ -->
+<div id="loginScreen" class="screen show">
+  <div class="logo-crown">♛</div>
+  <div class="logo-text">Royal Streams</div>
+  <div class="logo-tag">Entretenimento Premium</div>
+
+  <div class="login-card">
+    <div id="loginError" class="error-msg"></div>
+
+    <div>
+      <label class="field-label">E-mail</label>
+      <div class="field-wrap">
+        <input type="email" id="loginEmail" placeholder="seu@email.com" autocomplete="email">
+      </div>
+    </div>
+
+    <div>
+      <label class="field-label">Senha</label>
+      <div class="field-wrap">
+        <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password">
+        <button class="eye-btn" id="eyeLogin" type="button">👁</button>
+      </div>
+    </div>
+
+    <div class="forgot-link" id="forgotBtn">Esqueci minha senha</div>
+
+    <button class="btn-gold" id="loginBtn">ENTRAR</button>
+    <div class="divider"><span>ou</span></div>
+    <button class="btn-ghost" id="openRegisterBtn">✨ Criar conta grátis</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     DRAWER — CADASTRO
+═══════════════════════════════════════════════════ -->
+<div id="registerDrawer" class="drawer-overlay">
+  <div class="drawer">
+    <div class="drawer-handle"></div>
+    <div class="drawer-header">
+      <div class="drawer-title">Criar Conta</div>
+      <div class="drawer-sub">Junte-se ao Royal Streams agora</div>
+    </div>
+    <div class="drawer-body">
+      <div id="regError" class="error-msg"></div>
+
+      <div class="field-row">
+        <div>
+          <label class="field-label">Nome</label>
+          <div class="field-wrap"><input type="text" id="regNome" placeholder="Seu nome"></div>
+        </div>
+        <div>
+          <label class="field-label">Sobrenome</label>
+          <div class="field-wrap"><input type="text" id="regSobrenome" placeholder="Opcional"></div>
+        </div>
+      </div>
+
+      <div>
+        <label class="field-label">E-mail</label>
+        <div class="field-wrap"><input type="email" id="regEmail" placeholder="seu@email.com"></div>
+      </div>
+
+      <div>
+        <label class="field-label">Senha</label>
+        <div class="field-wrap">
+          <input type="password" id="regPass" placeholder="Mínimo 6 caracteres">
+          <button class="eye-btn" id="eyeReg" type="button">👁</button>
+        </div>
+      </div>
+
+      <div>
+        <label class="field-label">Confirmar Senha</label>
+        <div class="field-wrap">
+          <input type="password" id="regPass2" placeholder="Repita a senha">
+        </div>
+      </div>
+
+      <div>
+        <div class="avatar-picker-label">Escolha seu avatar</div>
+        <div class="avatar-grid">
+          <div class="avatar-opt selected" data-av="👑">👑</div>
+          <div class="avatar-opt" data-av="🎬">🎬</div>
+          <div class="avatar-opt" data-av="🌙">🌙</div>
+          <div class="avatar-opt" data-av="⚡">⚡</div>
+          <div class="avatar-opt" data-av="🔥">🔥</div>
+          <div class="avatar-opt" data-av="🌟">🌟</div>
+          <div class="avatar-opt" data-av="🐉">🐉</div>
+          <div class="avatar-opt" data-av="🎭">🎭</div>
+          <div class="avatar-opt" data-av="🦋">🦋</div>
+          <div class="avatar-opt" data-av="🪐">🪐</div>
+        </div>
+      </div>
+
+      <button class="btn-gold" id="registerBtn">CRIAR CONTA</button>
+      <button class="btn-ghost" id="closeRegBtn" style="margin-top:-4px;">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     TELA 2 — QUEM ESTÁ ASSISTINDO?
+═══════════════════════════════════════════════════ -->
+<div id="profilesScreen" class="screen">
+  <div class="profiles-inner">
+    <div class="logo-crown" style="font-size:44px;margin-bottom:14px;">♛</div>
+    <div class="profiles-title">Quem está assistindo?</div>
+    <div class="profiles-sub">Selecione seu perfil para continuar</div>
+    <div class="profiles-grid" id="profilesGrid"></div>
+    <div class="profiles-manage" id="manageProfilesBtn">✏️ Gerenciar perfis</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     TELA 3 — APP PRINCIPAL
+═══════════════════════════════════════════════════ -->
+<div id="appScreen">
+
+  <!-- ── HOME ── -->
+  <div id="innerHome" class="inner-page active">
+    <header class="app-header">
+      <div class="logo-app"><span class="logo-app-crown">♛</span>Royal Streams</div>
+      <div class="hdr-right">
+        <button class="hdr-btn" id="notifBtn" title="Notificações">🔔</button>
+        <div class="hdr-avatar" id="hdrAvatar" title="Trocar perfil">👑</div>
+      </div>
+    </header>
+
+    <div class="search-wrap">
+      <input type="text" id="searchInput" placeholder="Buscar filmes, séries, animes...">
+      <button id="searchBtn">BUSCAR</button>
+    </div>
+
+    <div id="welcomeBand" class="welcome-band">
+      <h3>Bem-vindo, <span id="welcomeName">usuário</span> 👋</h3>
+      <p>Use a busca acima para encontrar filmes, séries ou animes. Navegue pelo menu inferior para explorar cada categoria.</p>
+    </div>
+
+    <div id="searchResultsSection" style="display:none;">
+      <div class="sec-header">
+        <span class="sec-title">Resultados da Busca</span>
+        <span class="sec-count" id="resultCount">0</span>
+      </div>
+      <div id="searchResults" class="grid-container"></div>
+    </div>
+  </div>
+
+  <!-- ── FILMES ── -->
+  <div id="innerFilmes" class="inner-page">
+    <header class="app-header">
+      <div class="logo-app"><span class="logo-app-crown">♛</span>Royal Streams</div>
+      <div class="hdr-right"><div class="hdr-avatar" id="hdrAvatarF">👑</div></div>
+    </header>
+    <div class="gp-header">
+      <div class="gp-icon">🎬</div>
+      <div><div class="gp-title">Filmes</div><div class="gp-sub">Catálogo de filmes</div></div>
+    </div>
+    <div id="gridFilmes" class="grid-container"></div>
+  </div>
+
+  <!-- ── SÉRIES ── -->
+  <div id="innerSeries" class="inner-page">
+    <header class="app-header">
+      <div class="logo-app"><span class="logo-app-crown">♛</span>Royal Streams</div>
+      <div class="hdr-right"><div class="hdr-avatar" id="hdrAvatarS">👑</div></div>
+    </header>
+    <div class="gp-header">
+      <div class="gp-icon">📺</div>
+      <div><div class="gp-title">Séries</div><div class="gp-sub">Séries e temporadas</div></div>
+    </div>
+    <div id="gridSeries" class="grid-container"></div>
+  </div>
+
+  <!-- ── ANIMES ── -->
+  <div id="innerAnimes" class="inner-page">
+    <header class="app-header">
+      <div class="logo-app"><span class="logo-app-crown">♛</span>Royal Streams</div>
+      <div class="hdr-right"><div class="hdr-avatar" id="hdrAvatarA">👑</div></div>
+    </header>
+    <div class="gp-header">
+      <div class="gp-icon">⛩️</div>
+      <div><div class="gp-title">Animes</div><div class="gp-sub">Animes e adaptações</div></div>
+    </div>
+    <div id="gridAnimes" class="grid-container"></div>
+  </div>
+
+  <!-- ── TV ── -->
+  <div id="innerTV" class="inner-page">
+    <header class="app-header">
+      <div class="logo-app"><span class="logo-app-crown">♛</span>Royal Streams</div>
+      <div class="hdr-right"><div class="hdr-avatar" id="hdrAvatarT">👑</div></div>
+    </header>
+    <div class="gp-header">
+      <div class="gp-icon">📡</div>
+      <div><div class="gp-title">TV</div><div class="gp-sub">Canais ao vivo</div></div>
+    </div>
+    <div id="gridTV" class="grid-container"></div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-inner="innerHome">
+      <span class="nav-icon">🏠</span>Home
+    </button>
+    <button class="nav-btn" data-inner="innerFilmes">
+      <span class="nav-icon">🎬</span>Filmes
+    </button>
+    <button class="nav-btn" data-inner="innerSeries">
+      <span class="nav-icon">📺</span>Séries
+    </button>
+    <button class="nav-btn" data-inner="innerAnimes">
+      <span class="nav-icon">⛩️</span>Animes
+    </button>
+    <button class="nav-btn" data-inner="innerTV">
+      <span class="nav-icon">📡</span>TV
+    </button>
+  </nav>
+</div><!-- /appScreen -->
+
+<!-- ═══════════════════════════════════════════════════
+     MODAL — DETALHES DO CONTEÚDO
+═══════════════════════════════════════════════════ -->
+<div id="contentModal" class="modal-bg">
+  <div class="modal-card">
+    <div class="modal-drag"></div>
+    <div class="modal-banner">
+      <img id="modalBanner" src="" alt="">
+      <div class="modal-banner-grad"></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-meta">
+        <span class="mpill gold" id="modalTypeTag">Filme</span>
+        <span class="mpill">📅 <span id="modalDate"></span></span>
+        <span class="mpill gold">⭐ <span id="modalVote"></span></span>
+      </div>
+
+      <div class="modal-title" id="modalTitle"></div>
+      <div class="modal-overview" id="modalOverview"></div>
+
+      <!-- Temporadas (só TV) -->
+      <div id="modalSeasonsRow" style="display:none;" class="modal-info-row">
+        <strong>Temporadas:</strong> <span id="seasonsCount"></span>
+      </div>
+
+      <!-- Lista de episódios -->
+      <div id="episodesList"></div>
+
+      <div class="modal-divider"></div>
+
+      <!-- Player -->
+      <div class="player-label">Reproduzindo agora</div>
+      <video id="videoPlayer" controls></video>
+
+      <!-- Editar URL (Admin) -->
+      <button id="editUrlBtn" class="btn-primary" style="display:none;">✏️ Editar URL do Player (Admin)</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     MODAL — NOTIFICAÇÕES
+═══════════════════════════════════════════════════ -->
+<div id="notificationsModal" class="modal-bg">
+  <div class="modal-card">
+    <div class="modal-drag"></div>
+    <button class="modal-close" onclick="closeNotificationsModal()" style="position:absolute;top:18px;right:18px;">✕</button>
+    <div class="modal-body" style="padding-top:22px;">
+      <div style="font-family:var(--fd);font-size:15px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:16px;">
+        🔔 Notificações
+      </div>
+      <div id="notifList" style="display:flex;flex-direction:column;gap:8px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     JAVASCRIPT — MÓDULO PRINCIPAL
+═══════════════════════════════════════════════════ -->
+<script type="module">
+import { initializeApp }
+  from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import {
+  getDatabase, ref, set, get, update, onValue
+} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+/* ════════════════════════════════════
+   FIREBASE INIT
+════════════════════════════════════ */
+const firebaseConfig = {
+  apiKey:            "AIzaSyAlAx_HCmlYXvsUuKxOopQsAAoHUmjp5NU",
+  authDomain:        "royalcore-royalstreams.firebaseapp.com",
+  databaseURL:       "https://royalcore-royalstreams-default-rtdb.firebaseio.com",
+  projectId:         "royalcore-royalstreams",
+  storageBucket:     "royalcore-royalstreams.firebasestorage.app",
+  messagingSenderId: "1065662141942",
+  appId:             "1:1065662141942:web:0dc0d903bb618fdfc863d7",
+  measurementId:     "G-3L5EWWDVKM"
+};
+const fbApp = initializeApp(firebaseConfig);
+const auth  = getAuth(fbApp);
+const db    = getDatabase(fbApp);
+
+/* ════════════════════════════════════
+   CONFIGURAÇÃO GLOBAL
+════════════════════════════════════ */
+const TMDB_API = "93f6cc12e6897cce8be566c0e2f43a3b";
+
+// IDs gênero infantil / anime (original do código)
+const generosInfantilMovie = [16, 10751];
+const generosInfantilTV    = [16, 10751, 10762]; // 10762 = Kids
+const generosAnime         = [16];
+
+let currentUID       = null;
+let currentProfile   = null;   // perfil selecionado
+let selectedAvatar   = "👑";
+let currentContent   = null;
+let gridsLoaded      = false;
+
+/* ════════════════════════════════════
+   UTILITÁRIOS
+════════════════════════════════════ */
+function toast(msg, authMode = false) {
+  const t = document.getElementById('toastEl');
+  t.className = 'toast' + (authMode ? ' auth' : '');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._tid);
+  t._tid = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function showScreen(id) {
+  ['loginScreen','profilesScreen','appScreen'].forEach(sid => {
+    const el = document.getElementById(sid);
+    el.classList.remove('show');
+    el.style.display = 'none';
+  });
+  const el = document.getElementById(id);
+  el.style.display = id === 'appScreen' ? 'block' : 'flex';
+  requestAnimationFrame(() => el.classList.add('show'));
+}
+
+/* ════════════════════════════════════
+   AUTH STATE — roteador principal
+════════════════════════════════════ */
+onAuthStateChanged(auth, async user => {
+  if (user) {
+    currentUID = user.uid;
+    const snap = await get(ref(db, `users/${currentUID}/profiles`));
+    showScreen('profilesScreen');
+    buildProfilesGrid(snap.exists() ? snap.val() : {});
+  } else {
+    currentUID = null;
+    gridsLoaded = false;
+    showScreen('loginScreen');
+  }
+});
+
+/* ════════════════════════════════════
+   LOGIN
+════════════════════════════════════ */
+document.getElementById('loginBtn').onclick = async () => {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPass').value;
+  const errEl = document.getElementById('loginError');
+  const btn   = document.getElementById('loginBtn');
+  errEl.classList.remove('show');
+
+  if (!email || !pass) {
+    errEl.textContent = 'Preencha e-mail e senha.';
+    errEl.classList.add('show'); return;
+  }
+  btn.textContent = '...'; btn.disabled = true;
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+    toast('✅ Login realizado!', true);
+  } catch (e) {
+    errEl.textContent = 'E-mail ou senha incorretos.';
+    errEl.classList.add('show');
+  }
+  btn.textContent = 'ENTRAR'; btn.disabled = false;
+};
+
+// Enter no campo senha
+document.getElementById('loginPass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('loginBtn').click();
+});
+
+// Toggle olho login
+document.getElementById('eyeLogin').onclick = () => {
+  const i = document.getElementById('loginPass');
+  i.type = i.type === 'password' ? 'text' : 'password';
+};
+
+// Esqueci senha
+document.getElementById('forgotBtn').onclick = async () => {
+  const email = document.getElementById('loginEmail').value.trim();
+  if (!email) { toast('Digite seu e-mail primeiro', true); return; }
+  try {
+    await sendPasswordResetEmail(auth, email);
+    toast('📧 E-mail de recuperação enviado!', true);
+  } catch (e) {
+    toast('Erro ao enviar. Verifique o e-mail.', true);
+  }
+};
+
+/* ════════════════════════════════════
+   CADASTRO — DRAWER
+════════════════════════════════════ */
+const registerDrawer = document.getElementById('registerDrawer');
+document.getElementById('openRegisterBtn').onclick  = () => registerDrawer.classList.add('open');
+document.getElementById('closeRegBtn').onclick      = () => registerDrawer.classList.remove('open');
+registerDrawer.addEventListener('click', e => {
+  if (e.target === registerDrawer) registerDrawer.classList.remove('open');
+});
+
+// Toggle olho cadastro
+document.getElementById('eyeReg').onclick = () => {
+  const i = document.getElementById('regPass');
+  i.type = i.type === 'password' ? 'text' : 'password';
+};
+
+// Avatar picker
+document.querySelectorAll('.avatar-opt').forEach(opt => {
+  opt.onclick = () => {
+    document.querySelectorAll('.avatar-opt').forEach(o => o.classList.remove('selected'));
+    opt.classList.add('selected');
+    selectedAvatar = opt.dataset.av;
+  };
+});
+
+// Criar conta
+document.getElementById('registerBtn').onclick = async () => {
+  const nome  = document.getElementById('regNome').value.trim();
+  const sn    = document.getElementById('regSobrenome').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pass  = document.getElementById('regPass').value;
+  const pass2 = document.getElementById('regPass2').value;
+  const errEl = document.getElementById('regError');
+  const btn   = document.getElementById('registerBtn');
+  errEl.classList.remove('show');
+
+  if (!nome || !email || !pass) {
+    errEl.textContent = 'Preencha todos os campos obrigatórios.';
+    errEl.classList.add('show'); return;
+  }
+  if (pass.length < 6) {
+    errEl.textContent = 'Senha deve ter mínimo 6 caracteres.';
+    errEl.classList.add('show'); return;
+  }
+  if (pass !== pass2) {
+    errEl.textContent = 'As senhas não coincidem.';
+    errEl.classList.add('show'); return;
+  }
+
+  btn.textContent = '...'; btn.disabled = true;
+  try {
+    const cred     = await createUserWithEmailAndPassword(auth, email, pass);
+    const uid      = cred.user.uid;
+    const fullName = nome + (sn ? ' ' + sn : '');
+
+    // Salvar dados do usuário
+    await set(ref(db, `users/${uid}`), {
+      nome: fullName, email, avatar: selectedAvatar, createdAt: Date.now()
+    });
+
+    // Criar perfil padrão
+    await set(ref(db, `users/${uid}/profiles/perfil1`), {
+      id: 'perfil1', nome: fullName, avatar: selectedAvatar, tipo: 'adulto'
+    });
+
+    registerDrawer.classList.remove('open');
+    toast('🎉 Conta criada com sucesso!', true);
+  } catch (e) {
+    let msg = 'Erro ao criar conta.';
+    if (e.code === 'auth/email-already-in-use') msg = 'E-mail já cadastrado.';
+    errEl.textContent = msg;
+    errEl.classList.add('show');
+  }
+  btn.textContent = 'CRIAR CONTA'; btn.disabled = false;
+};
+
+/* ════════════════════════════════════
+   PERFIS — "Quem está assistindo?"
+════════════════════════════════════ */
+function buildProfilesGrid(profilesData) {
+  const grid     = document.getElementById('profilesGrid');
+  grid.innerHTML = '';
+  const list     = Object.values(profilesData);
+
+  // Se não há perfis salvos, exibe demos visuais
+  const profiles = list.length ? list : [
+    { id: 'p_demo1', nome: 'Minha Conta',  avatar: '👑',  tipo: 'adulto'   },
+    { id: 'p_demo2', nome: 'Infantil',     avatar: '🌟',  tipo: 'infantil' }
+  ];
+
+  profiles.forEach(p => {
+    const btn = document.createElement('div');
+    btn.className = 'profile-btn';
+    btn.innerHTML = `
+      <div class="profile-avatar">
+        ${p.avatar || '👤'}
+        <div class="profile-ring"></div>
+      </div>
+      <div class="profile-name">${p.nome}</div>
+      <div class="profile-type">${p.tipo === 'infantil' ? '👶 Infantil' : '🔑 Adulto'}</div>`;
+    btn.onclick = () => selectProfile(btn, p);
+    grid.appendChild(btn);
+  });
+
+  // Botão adicionar perfil
+  const addBtn = document.createElement('div');
+  addBtn.className = 'profile-add-btn';
+  addBtn.innerHTML = `
+    <div class="profile-add-icon">＋</div>
+    <div class="profile-name" style="color:inherit;font-size:13px;">Adicionar</div>`;
+  addBtn.onclick = () => toast('Função em breve disponível');
+  grid.appendChild(addBtn);
+}
+
+async function selectProfile(btnEl, profile) {
+  btnEl.classList.add('loading');
+  currentProfile = profile;
+
+  // Salva perfil ativo no localStorage para filtro
+  localStorage.setItem('perfilUsuario', profile.tipo);
+
+  await new Promise(r => setTimeout(r, 680));
+  btnEl.classList.remove('loading');
+
+  // Atualiza avatares no header
+  const av = profile.avatar || '👑';
+  ['hdrAvatar','hdrAvatarF','hdrAvatarS','hdrAvatarA','hdrAvatarT'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = av;
+  });
+  document.getElementById('welcomeName').textContent = profile.nome.split(' ')[0];
+
+  showScreen('appScreen');
+
+  // Carrega grids só uma vez por sessão
+  if (!gridsLoaded) {
+    gridsLoaded = true;
+    loadContentGrid('movie',  'gridFilmes');
+    loadContentGrid('tv',     'gridSeries');
+    loadContentGrid('tv',     'gridTV');
+    loadContentGrid('anime',  'gridAnimes');
+  }
+
+  toast(`Bem-vindo, ${profile.nome.split(' ')[0]}! 👋`);
+}
+
+// Clicar no avatar do header volta para perfis
+['hdrAvatar','hdrAvatarF','hdrAvatarS','hdrAvatarA','hdrAvatarT'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.onclick = () => showScreen('profilesScreen');
+});
+
+document.getElementById('manageProfilesBtn').onclick = () =>
+  toast('Gerenciamento de perfis em breve');
+
+/* ════════════════════════════════════
+   NAVEGAÇÃO APP (bottom nav)
+════════════════════════════════════ */
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.inner-page').forEach(p => p.classList.remove('active'));
+    document.getElementById(btn.dataset.inner).classList.add('active');
+  };
+});
+
+/* ════════════════════════════════════
+   BUSCA TMDb (multi)
+════════════════════════════════════ */
+async function doSearch() {
+  const query = document.getElementById('searchInput').value.trim();
+  if (!query) { toast('Digite algo para buscar'); return; }
+
+  const btn = document.getElementById('searchBtn');
+  btn.textContent = '...';
+
+  try {
+    const url  = `https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API}&language=pt-BR&query=${encodeURIComponent(query)}`;
+    const res  = await fetch(url);
+    const data = await res.json();
+    displaySearchResults(data.results || []);
+  } catch(e) {
+    toast('Erro ao buscar. Verifique sua conexão.');
+  }
+  btn.textContent = 'BUSCAR';
+}
+
+document.getElementById('searchBtn').onclick = doSearch;
+document.getElementById('searchInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doSearch();
+});
+
+function displaySearchResults(items) {
+  const sect = document.getElementById('searchResultsSection');
+  const band = document.getElementById('welcomeBand');
+  const grid = document.getElementById('searchResults');
+  grid.innerHTML = '';
+
+  if (!items.length) {
+    sect.style.display = 'none';
+    band.style.display = 'block';
+    toast('Nenhum resultado encontrado');
+    return;
+  }
+
+  sect.style.display = 'block';
+  band.style.display = 'none';
+  document.getElementById('resultCount').textContent = items.length;
+
+  items.forEach((item, i) => {
+    if (!item.poster_path && !item.backdrop_path) return;
+    const card = buildCard(item, item.media_type, i);
+    grid.appendChild(card);
+  });
+}
+
+/* ════════════════════════════════════
+   FÁBRICA DE CARDS
+════════════════════════════════════ */
+function buildCard(data, type, idx = 0) {
+  const card = document.createElement('div');
+  card.className = 'grid-card';
+  card.style.animationDelay = `${idx * 0.04}s`;
+
+  const posterPath = data.poster_path
+    || (data.poster ? data.poster.replace('https://image.tmdb.org/t/p/w500','').replace('https://image.tmdb.org/t/p/w300','') : '');
+  const imgSrc = posterPath
+    ? `https://image.tmdb.org/t/p/w300${posterPath}`
+    : 'https://via.placeholder.com/150x220/0e1220/c9a227?text=RS';
+
+  const typeLabel = type === 'movie' ? 'Filme' : type === 'tv' ? 'Série' : 'Anime';
+
+  card.innerHTML = `
+    <img src="${imgSrc}" alt="${data.title || data.name}" loading="lazy">
+    <div class="card-badge">${typeLabel}</div>
+    <div class="overlay">${data.title || data.name}</div>`;
+
+  // Botão ADD (só admin)
+  if (currentUID === 'UQ3KdS2e18ayfvpqcKzrhUkgyUo2') {
+    const addBtn = document.createElement('button');
+    addBtn.className = 'fav-btn';
+    addBtn.textContent = 'ADD';
+    addBtn.onclick = e => { e.stopPropagation(); addContentToFirebase(data, type); };
+    card.appendChild(addBtn);
+  }
+
+  card.onclick = () => openContentModal(data.id, type);
+  return card;
+}
+
+/* ════════════════════════════════════
+   ADICIONAR CONTEÚDO NO FIREBASE (Admin)
+════════════════════════════════════ */
+function addContentToFirebase(item, type) {
+  const t         = type || item.media_type;
+  const contentRef = ref(db, `content/${t}/${item.id}`);
+  const contentData = {
+    id:           item.id,
+    title:        item.title || item.name,
+    overview:     item.overview || '',
+    release_date: item.release_date || item.first_air_date || '',
+    vote_average: item.vote_average || 0,
+    poster:       item.poster_path   ? `https://image.tmdb.org/t/p/w500${item.poster_path}`   : '',
+    backdrop:     item.backdrop_path ? `https://image.tmdb.org/t/p/w780${item.backdrop_path}` : '',
+    media_type:   t,
+    adminUID:     currentUID,
+    timestamp:    Date.now(),
+    seasons:      item.number_of_seasons  || 0,
+    episodes:     item.number_of_episodes || 0
+  };
+  set(contentRef, contentData).then(() => toast('✅ Conteúdo adicionado!'));
+}
+
+/* ════════════════════════════════════
+   CARREGAR GRIDS DO FIREBASE (onValue)
+════════════════════════════════════ */
+function loadContentGrid(type, gridId) {
+  const grid = document.getElementById(gridId);
+
+  // Skeleton enquanto carrega
+  grid.innerHTML = Array(6).fill(
+    `<div class="grid-card skeleton" style="aspect-ratio:2/3;"></div>`
+  ).join('');
+
+  onValue(ref(db, `content/${type}`), snapshot => {
+    grid.innerHTML = '';
+
+    if (!snapshot.exists()) {
+      grid.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><p>Nenhum conteúdo ainda</p></div>`;
+      return;
+    }
+
+    let idx = 0;
+    snapshot.forEach(childSnap => {
+      const data = childSnap.val();
+      const card = buildCard(data, type, idx++);
+
+      // Botão favorito ❤
+      const favBtn = document.createElement('button');
+      favBtn.className = 'fav-btn heart';
+      favBtn.textContent = '❤';
+      favBtn.title = 'Favoritar';
+
+      // Cor dinâmica do favorito
+      onValue(ref(db, `users/${currentUID}/favorites/${data.id}`), fav => {
+        favBtn.style.color = fav.exists() ? '#e74c3c' : '#000';
+      });
+
+      favBtn.onclick = e => {
+        e.stopPropagation();
+        const favRef = ref(db, `users/${currentUID}/favorites/${data.id}`);
+        onValue(favRef, snap => {
+          if (snap.exists()) {
+            set(favRef, null);
+            toast('Removido dos favoritos');
+          } else {
+            set(favRef, { ...data, timestamp: Date.now() });
+            toast('❤ Adicionado aos favoritos');
+          }
+        }, { onlyOnce: true });
+      };
+
+      card.appendChild(favBtn);
+      grid.appendChild(card);
+    });
+  });
+}
+
+/* ════════════════════════════════════
+   MODAL DE DETALHES DO CONTEÚDO
+════════════════════════════════════ */
+async function openContentModal(id, type) {
+  const snap = await get(ref(db, `content/${type}/${id}`));
+  if (!snap.exists()) { toast('Conteúdo não encontrado no banco'); return; }
+
+  const data     = snap.val();
+  currentContent = { id, type, ...data };
+
+  // Tipo
+  document.getElementById('modalTypeTag').textContent =
+    type === 'movie' ? '🎬 Filme' : type === 'tv' ? '📺 Série' : '⛩️ Anime';
+
+  // Dados
+  document.getElementById('modalTitle').textContent    = data.title;
+  document.getElementById('modalBanner').src           = data.backdrop || data.poster || '';
+  document.getElementById('modalOverview').textContent = data.overview || 'Sem sinopse disponível.';
+  document.getElementById('modalDate').textContent     = data.release_date || '—';
+  document.getElementById('modalVote').textContent     = data.vote_average
+    ? parseFloat(data.vote_average).toFixed(1) : '—';
+
+  // Temporadas / Episódios (TV)
+  const seasonsRow = document.getElementById('modalSeasonsRow');
+  if (data.media_type === 'tv') {
+    seasonsRow.style.display = 'flex';
+    document.getElementById('seasonsCount').textContent = data.seasons || 0;
+    displayEpisodes(data.episodes || 0);
+  } else {
+    seasonsRow.style.display = 'none';
+    document.getElementById('episodesList').innerHTML = '';
+  }
+
+  // Player — limpar e setar
+  const vp = document.getElementById('videoPlayer');
+  vp.src = '';
+  setTimeout(() => { vp.src = data.player_url || 'https://www.example.com/default.mp4'; }, 500);
+
+  // Editar URL (Admin)
+  const editBtn = document.getElementById('editUrlBtn');
+  editBtn.style.display = (currentUID === data.adminUID) ? 'flex' : 'none';
+  editBtn.onclick = () => editPlayerUrl(currentContent);
+
+  document.getElementById('contentModal').classList.add('open');
+
+  // Salvar no histórico do usuário
+  set(ref(db, `users/${currentUID}/history/${id}`), {
+    id, type, timestamp: Date.now()
+  });
+}
+
+function closeModal() {
+  document.getElementById('contentModal').classList.remove('open');
+  const vp = document.getElementById('videoPlayer');
+  vp.pause();
+  vp.src = '';
+}
+window.closeModal = closeModal;
+
+/* ════════════════════════════════════
+   EXIBIÇÃO DE EPISÓDIOS
+════════════════════════════════════ */
+function displayEpisodes(count) {
+  const list = document.getElementById('episodesList');
+  list.innerHTML = '';
+  if (!count) return;
+
+  const lbl = document.createElement('div');
+  lbl.className = 'eps-label';
+  lbl.textContent = 'Episódios';
+  list.appendChild(lbl);
+
+  for (let i = 1; i <= Math.min(count, 50); i++) {
+    const ep = document.createElement('div');
+    ep.className = 'ep-item';
+    ep.innerHTML = `<span class="ep-num">${String(i).padStart(2,'0')}</span> Episódio ${i}`;
+    ep.onclick = () => {
+      document.getElementById('videoPlayer').src = `https://www.example.com/episode${i}.mp4`;
+    };
+    list.appendChild(ep);
+  }
+}
+
+/* ════════════════════════════════════
+   EDITAR URL DO PLAYER (Admin)
+════════════════════════════════════ */
+function editPlayerUrl(content) {
+  const vp     = document.getElementById('videoPlayer');
+  const newUrl = prompt('Insira nova URL do player:', vp.src);
+  if (!newUrl) return;
+  vp.src = newUrl;
+  update(ref(db, `content/${content.type}/${content.id}`), { player_url: newUrl });
+  toast('✅ URL do player atualizada!');
+}
+
+/* ════════════════════════════════════
+   NOTIFICAÇÕES
+════════════════════════════════════ */
+document.getElementById('notifBtn').onclick = () => {
+  document.getElementById('notificationsModal').classList.add('open');
+  loadNotifications();
+};
+
+function loadNotifications() {
+  const notifRef = ref(db, `users/${currentUID}/notifications`);
+  onValue(notifRef, snapshot => {
+    const list = document.getElementById('notifList');
+    list.innerHTML = '';
+    if (!snapshot.exists()) {
+      list.innerHTML = '<p style="color:var(--muted);text-align:center;font-size:13px;padding:20px 0;">Sem notificações no momento.</p>';
+      return;
+    }
+    snapshot.forEach(snap => {
+      const data = snap.val();
+      const div  = document.createElement('div');
+      div.className = 'notif-item';
+      div.innerHTML = `<div class="notif-dot"></div>${data.message}`;
+      list.innerHTML.length && list.appendChild(div); // evita duplicar
+      list.appendChild(div);
+    });
+  }, { onlyOnce: true });
+}
+
+// Tecla N abre notificações (original do código)
+document.addEventListener('keydown', e => {
+  if (e.key === 'n' || e.key === 'N') {
+    document.getElementById('notificationsModal').classList.add('open');
+    loadNotifications();
+  }
+});
+
+function closeNotificationsModal() {
+  document.getElementById('notificationsModal').classList.remove('open');
+}
+window.closeNotificationsModal = closeNotificationsModal;
+
+/* ════════════════════════════════════
+   FECHAR MODAIS AO CLICAR NO BACKDROP
+════════════════════════════════════ */
+document.querySelectorAll('.modal-bg').forEach(bg => {
+  bg.addEventListener('click', e => {
+    if (e.target === bg) {
+      bg.classList.remove('open');
+      const vp = document.getElementById('videoPlayer');
+      if (bg.id === 'contentModal' && vp) { vp.pause(); vp.src = ''; }
+    }
+  });
+});
+
+/* ════════════════════════════════════
+   FILTRAGEM POR PERFIL (infantil/adulto)
+   — Função original preservada integralmente
+════════════════════════════════════ */
+async function buscarEFiltrarConteudos(perfilAtual, listaDoBanco) {
+  const conteudosFiltrados = [];
+
+  for (const item of listaDoBanco) {
+    try {
+      let urlApi;
+      if (item.tipo === 'filme') {
+        urlApi = `https://api.themoviedb.org/3/movie/${item.tmdbId}?api_key=${TMDB_API}&language=pt-BR`;
+      } else {
+        urlApi = `https://api.themoviedb.org/3/tv/${item.tmdbId}?api_key=${TMDB_API}&language=pt-BR`;
+      }
+
+      const response = await fetch(urlApi);
+      const detalhes = await response.json();
+
+      if (perfilAtual === 'adulto') {
+        conteudosFiltrados.push(detalhes);
+      } else if (perfilAtual === 'infantil') {
+        const generoIds = detalhes.genres.map(g => g.id);
+        let isInfantil = false;
+
+        if (item.tipo === 'filme') {
+          isInfantil = !detalhes.adult && (
+            generoIds.some(id => generosInfantilMovie.includes(id)) ||
+            (detalhes.original_language === 'ja' && generoIds.some(id => generosAnime.includes(id)))
+          );
+        } else {
+          isInfantil =
+            generoIds.some(id => generosInfantilTV.includes(id)) ||
+            (detalhes.original_language === 'ja' && generoIds.some(id => generosAnime.includes(id)));
+        }
+
+        if (isInfantil) conteudosFiltrados.push(detalhes);
+      }
+    } catch (err) {
+      console.error("Erro buscando no TMDb:", err);
+    }
+  }
+
+  // Renderiza no app
+  renderizarConteudos(conteudosFiltrados);
+}
+
+function renderizarConteudos(lista) {
+  // Integra com a lógica de exibição existente
+  lista.forEach(item => console.log('Filtrado:', item.title || item.name));
+}
+
+// Executa com o perfil salvo
+const perfilAtual  = localStorage.getItem('perfilUsuario') || 'adulto';
+const listaDoBanco = [
+  // { tmdbId: 550, tipo: 'filme' },
+  // { tmdbId: 1396, tipo: 'serie' },
+];
+buscarEFiltrarConteudos(perfilAtual, listaDoBanco);
+
+</script>
+</body>
+</html>
